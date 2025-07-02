@@ -1,0 +1,8 @@
+### 네임스페이스 만들기
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cowing-prod
+  labels:
+    environment: production
+    purpose: application-deployment
