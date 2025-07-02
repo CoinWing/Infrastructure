@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msa-front
+  namespace: cowing-prod
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: msa-front
+  template:
+    metadata:
+      labels:
+        app: msa-front
+    spec:
+      containers:
+      - name: msa-front
+        image: ghcr.io/coinwing/cowing-msa-front:v0.0.1
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1024Mi"
+            cpu: "1000m"
+      imagePullSecrets:
+        - name: ghcr-login-secret
