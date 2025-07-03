@@ -1,0 +1,20 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: front-virtualservice
+  namespace: cowing-prod
+spec:
+  hosts:
+    - "cowing.co.kr"
+    - "*.cowing.co.kr"
+  gateways:
+    - istio-ingressgateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: msa-front
+            port:
+              number: 3000
