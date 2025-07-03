@@ -20,5 +20,3 @@ spec:
                 name: istio-ingressgateway
                 port:
                   number: 8080
-                port:
-                  number: 8443
