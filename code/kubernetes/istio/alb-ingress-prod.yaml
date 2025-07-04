@@ -7,7 +7,7 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:593793025731:certificate/6e4b4af1-c0fa-48b0-9260-a7889d4d6b90
     alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/target-type: ip
 spec:
   ingressClassName: alb
   rules:
@@ -19,4 +19,4 @@ spec:
               service:
                 name: istio-ingressgateway
                 port:
-                  number: 8080
+                  number: 80
