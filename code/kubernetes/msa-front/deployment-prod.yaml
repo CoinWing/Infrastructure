@@ -20,13 +20,13 @@ spec:
         - containerPort: 3000
         env:
         - name: UPBIT_WS_URL
-          value: "ws://msa-broadcaster:8081/ws"
+          value: "wss://ws.cowing.co.kr"
         - name: UPBIT_API_URL
           value: "https://api.upbit.com/v1"
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
+            memory: "256Mi"
+            cpu: "250m"
           limits:
             memory: "1024Mi"
             cpu: "1000m"
