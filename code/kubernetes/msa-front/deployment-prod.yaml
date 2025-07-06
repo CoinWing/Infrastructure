@@ -15,13 +15,18 @@ spec:
     spec:
       containers:
       - name: msa-front
-        image: ghcr.io/coinwing/cowing-msa-front:v0.0.1
+        image: ghcr.io/coinwing/cowing-msa-front
         ports:
         - containerPort: 3000
+        env:
+        - name: UPBIT_WS_URL
+          value: "ws://msa-broadcaster:8081/ws"
+        - name: UPBIT_API_URL
+          value: "https://api.upbit.com/v1"
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "128Mi"
+            cpu: "100m"
           limits:
             memory: "1024Mi"
             cpu: "1000m"

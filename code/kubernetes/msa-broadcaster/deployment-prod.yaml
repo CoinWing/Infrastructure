@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msa-broadcaster
+  namespace: cowing-prod
+  labels:
+    app: msa-broadcaster
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: msa-broadcaster
+  template:
+    metadata:
+      labels:
+        app: msa-broadcaster
+    spec:
+      containers:
+        - name: msa-broadcaster
+          image: ghcr.io/coinwing/cowing-msa-broadcaster
+          ports:
+            - containerPort: 8081
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "1Gi"
+      imagePullSecrets:
+        - name: ghcr-login-secret
