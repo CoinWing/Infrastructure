@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trade-engine-deployment
+  labels:
+    app: trade-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trade-engine
+  template:
+    metadata:
+      labels:
+        app: trade-engine
+        cowing: trade
+    spec:
+      containers:
+      - name: trading-engine
+        image: ghcr.io/coinwing/cowing-msa-trading:main
+        env:
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: redis-password
+        - name: DB_URL
+          value: "jdbc:mariadb://mariadb-service:3306/cowingdb"
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mardiadb-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mardiadb-secret
+              key: password
+        - name: JWT_SECRET
+          value: "99f461065038a0d63d66ad26d52bf68a76ad3b0d7cb576f2b67cd8d9e75230e9"
+        resources:
+          limits:
+            memory: 600Mi
+            cpu: 500m
+          requests:
+            memory: 512Mi
+            cpu: 250m
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: ghcr-login-secret
