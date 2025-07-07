@@ -1,0 +1,130 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: trade-mariadb-container
+    environment:
+      MARIADB_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: trade
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - trade-network
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      timeout: 30s
+      retries: 10
+      interval: 30s
+
+  redis:
+    image: redis:alpine
+    container_name: trade-redis-container
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass 1234 # 이게 비밀번호
+    networks:
+      - trade-network
+
+  backend-auth:
+    build: ../../../Cowing-msa-auth
+    container_name: backend-auth-container
+    depends_on:
+      - mariadb
+      - redis
+    environment:
+      DB_URL: jdbc:mariadb://mariadb:3306/trade
+      DB_USERNAME: root
+      DB_PASSWORD: 1234
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: 1234
+      JWT_SECRET: 99f461065038a0d63d66ad26d52bf68a76ad3b0d7cb576f2b67cd8d9e75230e9
+      ACCESS_TOKEN_EXPIRE: 86400000
+      REFRESH_TOKEN_EXPIRE: 172800000
+    ports:
+      - "8080:8080"
+    networks:
+      - trade-network
+
+  backend-trade:
+    build: ../../../Cowing-msa-trading
+    container_name: backend-trade-container
+    depends_on:
+      - backend-auth
+      - backend-orderbook
+    environment:
+      DB_URL: jdbc:mariadb://mariadb:3306/trade
+      DB_USERNAME: root
+      DB_PASSWORD: 1234
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: 1234
+      JWT_SECRET: 99f461065038a0d63d66ad26d52bf68a76ad3b0d7cb576f2b67cd8d9e75230e9 # 이게 JWT 비밀키 잘 설정했는지 확인
+    ports:
+      - "8081:8081"
+    networks:
+      - trade-network
+
+  backend-orderbook:
+    build: ../../../Cowing-msa-orderbook
+    container_name: backend-orderbook-container
+    depends_on:
+      - redis
+    environment:
+      DB_URL: jdbc:mariadb://mariadb:3306/trade
+      DB_USERNAME: root
+      DB_PASSWORD: 1234
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: 1234
+      JWT_SECRET: 99f461065038a0d63d66ad26d52bf68a76ad3b0d7cb576f2b67cd8d9e75230e9 # 이게 JWT 비밀키 잘 설정했는지 확인
+    ports:
+      - "8082:8082"
+    networks:
+      - trade-network
+
+  backend-broadcaster:
+    build: ../../../Cowing-msa-broadcaster
+    container_name: backend-broadcaster-container
+    ports:
+      - "8083:8083"
+    networks:
+      - trade-network
+
+  frontend:
+    build: ../../../front-service
+    container_name: frontend-container  
+    ports:
+      - "3000:3000"
+    networks:
+      - trade-network
+    environment:
+      - NEXT_PUBLIC_URL=http://localhost
+    volumes:
+      - ../../../front-service/src:/app/src
+
+  nginx-proxy:
+    image: nginx:alpine
+    container_name: nginx-proxy-container
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-auth
+      - backend-trade
+      - backend-orderbook
+      - backend-broadcaster
+      - frontend
+    networks:
+      - trade-network
+
+networks:
+  trade-network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
