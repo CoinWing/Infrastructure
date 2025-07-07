@@ -14,9 +14,3 @@ spec:
       hosts:
         - "cowing.co.kr"
         - "*.cowing.co.kr"
-    - port:
-        number: 80
-        name: websocket
-        protocol: HTTP
-      hosts:
-        - "ws.cowing.co.kr"

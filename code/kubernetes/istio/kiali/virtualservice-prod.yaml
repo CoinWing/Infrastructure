@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali-virtualservice
+  namespace: istio-system # istio-system namespace 에 배포
+spec:
+  hosts:
+    - "kiali.cowing.co.kr"
+  gateways:
+    - istio-system/istio-ingressgateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: kiali
+            port:
+              number: 20001
