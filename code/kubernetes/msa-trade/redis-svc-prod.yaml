@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service 
+  name: msa-trade-redis
+  namespace: cowing-prod
 spec:
   selector:
-    app: redis 
+    app: msa-trade-redis
   ports:
   - protocol: TCP
     port: 6379 # 서비스가 노출할 포트
