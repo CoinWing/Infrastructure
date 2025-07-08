@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis-pod
+  labels:
+    app: redis
+spec:
+  containers:
+    - name: redis
+      image: redis:alpine
+      command: ["sh", "-c"]
+      args:
+        - redis-server --appendonly no --save ''
+      resources:
+        limits:
+          memory: 200Mi
+          cpu: 200m
+        requests:
+          memory: 100Mi
+          cpu: 100m
+      ports:
+        - containerPort: 6379
