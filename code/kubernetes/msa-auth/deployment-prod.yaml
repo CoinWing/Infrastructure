@@ -1,31 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cowing-msa-auth-deployment
+  name: msa-auth
+  namespace: cowing-prod
   labels:
-    app: cowing-msa-auth
+    app: msa-auth
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: cowing-msa-auth
+      app: msa-auth
   template:
     metadata:
       labels:
-        app: cowing-msa-auth
+        app: msa-auth
         cowing: auth
     spec:
       containers:
-        - name: cowing-msa-auth
-          image: ghcr.io/coinwing/cowing-msa-auth:main
+        - name: msa-auth
+          image: ghcr.io/coinwing/cowing-msa-auth
           imagePullPolicy: Always
           env:
             - name: REDIS_HOST
-              value: "redis-service"
+              value: "msa-auth-redis"
             - name: REDIS_PORT
               value: "6379"
             - name: DB_URL
-              value: "jdbc:mariadb://mariadb-service:3306/cowingDB"
+              value: "jdbc:mariadb://common-mariadb:3306/cowingDB"
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -37,18 +38,21 @@ spec:
                   name: mardiadb-secret
                   key: password
             - name: JWT_SECRET
-              value: "99f461065038a0d63d66ad26d52bf68a76ad3b0d7cb576f2b67cd8d9e75230e9"
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwt-secret
             - name: ACCESS_TOKEN_EXPIRE
               value: "86400000"
             - name: REFRESH_TOKEN_EXPIRE
               value: "172800000"
           resources:
-            limits:
-              memory: "700Mi"
-              cpu: 500m
             requests:
-              memory: "512Mi"
               cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 700Mi
           ports:
             - containerPort: 8082
           livenessProbe:

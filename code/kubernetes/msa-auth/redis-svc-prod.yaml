@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service
+  name: msa-auth-redis
+  namespace: cowing-prod
 spec:
   selector:
-    app: redis
+    app: msa-auth-redis
   ports:
     - protocol: TCP
       port: 6379

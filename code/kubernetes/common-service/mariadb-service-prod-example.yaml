@@ -1,7 +1,8 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mariadb-service 
+  name: common-mariadb
+  namespace: cowing-prod
 spec:
   type: ExternalName 
   externalName: <실제 MariaDB 서비스의 DNS>
