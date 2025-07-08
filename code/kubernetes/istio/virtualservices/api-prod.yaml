@@ -9,16 +9,42 @@ spec:
   gateways:
     - istio-system/istio-ingressgateway
   http:
+    # OPTIONS preflight 요청을 모든 경로에서 처리
+    - match:
+        - method:
+            exact: OPTIONS
+      directResponse:
+        status: 200
+        body:
+          string: ""
+      headers:
+        response:
+          add:
+            Access-Control-Allow-Origin: "https://cowing.co.kr"
+            Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
+            Access-Control-Allow-Headers: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+            Access-Control-Allow-Credentials: "true"
+            Access-Control-Max-Age: "3600"
+    # Trade 서비스 경로
     - match:
         - uri:
-            prefix: /api/v1/histories
-        - uri:
             prefix: /api/v1/orders
+        - uri:
+            prefix: /api/v1/histories
       route:
         - destination:
             host: msa-trade
             port:
               number: 8082
+      headers:
+        response:
+          add:
+            Access-Control-Allow-Origin: "https://cowing.co.kr"
+            Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
+            Access-Control-Allow-Headers: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+            Access-Control-Allow-Credentials: "true"
+            Access-Control-Max-Age: "3600"
+    # Auth 서비스 경로
     - match:
         - uri:
             prefix: /api/v1/
@@ -27,3 +53,11 @@ spec:
             host: msa-auth
             port:
               number: 8080
+      headers:
+        response:
+          add:
+            Access-Control-Allow-Origin: "https://cowing.co.kr"
+            Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
+            Access-Control-Allow-Headers: "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+            Access-Control-Allow-Credentials: "true"
+            Access-Control-Max-Age: "3600"
