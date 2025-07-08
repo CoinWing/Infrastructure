@@ -25,6 +25,11 @@ spec:
               value: "msa-auth-redis"
             - name: REDIS_PORT
               value: "6380"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: redis-password
             - name: DB_URL
               value: "jdbc:mariadb://common-mariadb:3306/cowingDB"
             - name: DB_USERNAME
@@ -54,19 +59,19 @@ spec:
               cpu: 500m
               memory: 700Mi
           ports:
-            - containerPort: 8082
+            - containerPort: 8080
           livenessProbe:
             httpGet:
               path: /actuator/health
-              port: 8082
-            initialDelaySeconds: 180
+              port: 8080
+            initialDelaySeconds: 100
             periodSeconds: 30
             failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /actuator/health
-              port: 8082
-            initialDelaySeconds: 180
+              port: 8080
+            initialDelaySeconds: 100
             periodSeconds: 15
             failureThreshold: 5
       imagePullSecrets:
