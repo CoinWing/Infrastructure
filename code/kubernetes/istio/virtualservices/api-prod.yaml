@@ -1,0 +1,29 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: api-virtualservice
+  namespace: cowing-prod
+spec:
+  hosts:
+    - "api.cowing.co.kr"
+  gateways:
+    - istio-system/istio-ingressgateway
+  http:
+    - match:
+        - uri:
+            prefix: /api/v1/histories
+        - uri:
+            prefix: /api/v1/orders
+      route:
+        - destination:
+            host: msa-trade
+            port:
+              number: 8082
+    - match:
+        - uri:
+            prefix: /api/v1/
+      route:
+        - destination:
+            host: msa-auth
+            port:
+              number: 8080
