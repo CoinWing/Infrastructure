@@ -42,7 +42,10 @@ spec:
               name: mardiadb-secret
               key: password
         - name: JWT_SECRET
-          value: "99f461065038a0d63d66ad26d52bf68a76ad3b0d7cb576f2b67cd8d9e75230e9"
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: jwt-secret
         resources:
           requests:
             cpu: 250m
