@@ -18,7 +18,7 @@ spec:
         - destination:
             host: msa-broadcaster
             port:
-              number: 8081
+              number: 8083
       # WebSocket 연결을 위한 설정
       timeout: 1s
       retries:
