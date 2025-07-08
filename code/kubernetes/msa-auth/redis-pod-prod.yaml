@@ -9,9 +9,16 @@ spec:
   containers:
     - name: msa-auth-redis
       image: redis:alpine
+      env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: redis-password
       command: ["sh", "-c"]
       args:
-        - redis-server --appendonly no --save ''
+        - |
+          redis-server --requirepass "$REDIS_PASSWORD" --appendonly no --save ""
       resources:
         requests:
           cpu: 100m
