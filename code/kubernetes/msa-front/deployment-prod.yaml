@@ -4,7 +4,7 @@ metadata:
   name: msa-front
   namespace: cowing-prod
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: msa-front
