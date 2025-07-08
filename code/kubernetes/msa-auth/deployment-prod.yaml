@@ -24,7 +24,7 @@ spec:
             - name: REDIS_HOST
               value: "msa-auth-redis"
             - name: REDIS_PORT
-              value: "6379"
+              value: "6380"
             - name: DB_URL
               value: "jdbc:mariadb://common-mariadb:3306/cowingDB"
             - name: DB_USERNAME

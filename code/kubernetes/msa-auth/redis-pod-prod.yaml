@@ -13,11 +13,11 @@ spec:
       args:
         - redis-server --appendonly no --save ''
       resources:
-        limits:
-          memory: 200Mi
-          cpu: 200m
         requests:
-          memory: 100Mi
           cpu: 100m
+          memory: 100Mi
+        limits:
+          cpu: 200m
+          memory: 200Mi
       ports:
-        - containerPort: 6379
+        - containerPort: 6380
