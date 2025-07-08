@@ -8,5 +8,5 @@ spec:
     app: msa-trade-redis
   ports:
   - protocol: TCP
-    port: 6379 # 서비스가 노출할 포트
-    targetPort: 6379 # 파드의 컨테이너 포트
+    port: 6380 # 서비스가 노출할 포트
+    targetPort: 6380 # 파드의 컨테이너 포트

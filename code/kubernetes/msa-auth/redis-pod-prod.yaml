@@ -27,4 +27,4 @@ spec:
           cpu: 200m
           memory: 200Mi
       ports:
-        - containerPort: 6380
+        - containerPort: 6379
