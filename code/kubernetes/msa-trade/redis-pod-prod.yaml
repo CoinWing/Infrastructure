@@ -15,7 +15,7 @@ spec:
         secretKeyRef:
           name: redis-secret     
           key: redis-password   
-    command: ["redis-server", "--appendonly", "no", "--save", ""]
+    command: ["redis-server", "--port", "6380", "--appendonly", "no", "--save", ""]
     args: ["--requirepass", "$(REDIS_PASSWORD)"]
     resources:
       requests:
