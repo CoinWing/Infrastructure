@@ -23,7 +23,7 @@ spec:
         - name: REDIS_HOST
           value: "msa-trade-redis"
         - name: REDIS_PORT
-          value: "6379"
+          value: "6380"
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
