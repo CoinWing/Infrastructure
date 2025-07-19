@@ -7,8 +7,9 @@ services:
     container_name: nginx-proxy-container
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl
     ports:
-      - "80:80"
+      - "443:443"
     depends_on:
       - backend-auth
       - backend-trade
@@ -27,7 +28,7 @@ services:
     networks:
       - trade-network
     environment:
-      - NEXT_PUBLIC_URL=http://localhost
+      - NEXT_PUBLIC_URL=https://localhost
     volumes:
       - ../../../front-service/src:/app/src
 
