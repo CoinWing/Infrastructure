@@ -46,6 +46,8 @@ spec:
             secretKeyRef:
               name: jwt-secret
               key: jwt-secret
+        - name: BROADCASTER_WEBSOCKET_URL
+          value: "wss://ws.cowing.co.kr
         resources:
           requests:
             cpu: 250m
