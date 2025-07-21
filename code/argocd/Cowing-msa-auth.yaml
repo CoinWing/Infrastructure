@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: msa-auth
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: msa-auth=ghcr.io/coinwing/msa-auth
+    argocd-image-updater.argoproj.io/msa-auth.update-strategy: latest
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/coinwing/Cowing-msa-auth
+    targetRevision: main
+    path: chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cowing-main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

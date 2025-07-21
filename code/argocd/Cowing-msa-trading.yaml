@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: msa-trading
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: msa-trading=ghcr.io/coinwing/cowing-msa-trading
+    argocd-image-updater.argoproj.io/msa-trading.update-strategy: latest
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/coinwing/Cowing-msa-trading
+    targetRevision: main
+    path: chart
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cowing-main
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
