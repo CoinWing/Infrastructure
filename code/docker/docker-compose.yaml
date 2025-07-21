@@ -97,7 +97,7 @@ services:
       REDIS_PASSWORD: 1234
       JWT_SECRET: 99f461065038a0d63d66ad26d52bf68a76ad3b0d7cb576f2b67cd8d9e75230e9 # 이게 JWT 비밀키 잘 설정했는지 확인
       SERVER_PORT: 8081
-      BROADCASTER_WEBSOCKET_URL: wss://localhost/ws
+      BROADCASTER_WEBSOCKET_URL: ws://backend-broadcaster:8083/ws
     ports:
       - "8081:8081"
     networks:
