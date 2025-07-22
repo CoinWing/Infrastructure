@@ -27,10 +27,10 @@ spec:
           value: "https://api.cowing.co.kr"
         resources:
           requests:
-            memory: 256Mi
-            cpu: 250m
-          limits:
             memory: 1024Mi
-            cpu: 1000m
+            cpu: 500m
+          limits:
+            memory: 2048Mi
+            cpu: 2000m
       imagePullSecrets:
         - name: ghcr-login-secret
