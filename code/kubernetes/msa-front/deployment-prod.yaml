@@ -19,12 +19,10 @@ spec:
         ports:
         - containerPort: 3000
         env:
-        - name: UPBIT_WS_URL
+        - name: WS_URL
           value: "wss://ws.cowing.co.kr"
         - name: UPBIT_API_URL
           value: "https://api.upbit.com/v1"
-        - name: NEXT_PUBLIC_URL
-          value: "https://api.cowing.co.kr"
         resources:
           requests:
             memory: 1024Mi
