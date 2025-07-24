@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/CoinWing/Infrastructure
-    path: kustomize/msa-trade
+    path: code/argocd/kustomize/msa-trade
     targetRevision: prod
   destination:
     server: https://kubernetes.default.svc

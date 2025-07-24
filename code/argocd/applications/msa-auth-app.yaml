@@ -3,13 +3,11 @@ kind: Application
 metadata:
   name: msa-auth
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
     repoURL: https://github.com/CoinWing/Infrastructure
-    path: kustomize/msa-auth
+    path: code/argocd/kustomize/msa-auth
     targetRevision: prod
   destination:
     server: https://kubernetes.default.svc
