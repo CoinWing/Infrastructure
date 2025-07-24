@@ -17,3 +17,14 @@ spec:
             host: argocd-server
             port:
               number: 80
+    - match:  
+        - uri:
+            prefix: /api/webhook  
+      route:
+        - destination:
+            host: argocd-server.argocd.svc.cluster.local  
+            port:
+              number: 80
+      headers:
+        request:
+          methods: [POST]
