@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/CoinWing/Infrastructure
-    path: kustomize/msa-broadcaster
+    path: code/argocd/kustomize/msa-broadcaster
     targetRevision: prod
   destination:
     server: https://kubernetes.default.svc

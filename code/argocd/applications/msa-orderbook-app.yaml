@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/CoinWing/Infrastructure
-    path: kustomize/msa-orderbook
+    path: code/argocd/kustomize/msa-orderbook
     targetRevision: prod
   destination:
     server: https://kubernetes.default.svc
