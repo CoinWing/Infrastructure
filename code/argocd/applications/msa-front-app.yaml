@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/CoinWing/Infrastructure
     path: kustomize/msa-front
-    targetRevision: main
+    targetRevision: prod
   destination:
     server: https://kubernetes.default.svc
     namespace: cowing-prod
