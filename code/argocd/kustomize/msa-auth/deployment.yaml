@@ -34,12 +34,12 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mardiadb-secret
+                  name: mariadb-secret
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mardiadb-secret
+                  name: mariadb-secret
                   key: password
             - name: JWT_SECRET
               valueFrom:
