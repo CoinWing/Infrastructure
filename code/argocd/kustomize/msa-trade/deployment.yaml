@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msa-trade
+  namespace: cowing-prod
+  labels:
+    app: msa-trade
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: msa-trade
+  template:
+    metadata:
+      labels:
+        app: msa-trade
+        cowing: trade
+    spec:
+      containers:
+      - name: msa-trade
+        image: ghcr.io/coinwing/cowing-msa-trading:latest
+        env:
+        - name: REDIS_HOST
+          value: "msa-trade-redis"
+        - name: REDIS_PORT
+          value: "6380"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: redis-secret
+              key: redis-password
+        - name: DB_URL
+          value: "jdbc:mariadb://common-mariadb:3306/cowingDB"
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mardiadb-secret
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mardiadb-secret
+              key: password
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret
+              key: jwt-secret
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 600Mi
+        ports:
+        - containerPort: 8082
+      imagePullSecrets:
+      - name: ghcr-login-secret

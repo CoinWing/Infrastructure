@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: msa-broadcaster
+  namespace: cowing-prod
+spec:
+  selector:
+    app: msa-broadcaster
+  ports:
+  - port: 8083
+    name: http
+    targetPort: 8083
+    protocol: TCP
+  type: ClusterIP
