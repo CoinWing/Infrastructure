@@ -34,12 +34,12 @@ spec:
         - name: DB_USERNAME
           valueFrom:
             secretKeyRef:
-              name: mardiadb-secret
+              name: mariadb-secret
               key: username
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: mardiadb-secret
+              name: mariadb-secret
               key: password
         - name: JWT_SECRET
           valueFrom:
@@ -55,5 +55,22 @@ spec:
             memory: 600Mi
         ports:
         - containerPort: 8082
+        # Health checks 추가
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8082
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8082
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+          failureThreshold: 3
       imagePullSecrets:
       - name: ghcr-login-secret
