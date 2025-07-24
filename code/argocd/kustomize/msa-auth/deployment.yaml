@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msa-auth
+  namespace: cowing-prod
+  labels:
+    app: msa-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: msa-auth
+  template:
+    metadata:
+      labels:
+        app: msa-auth
+    spec:
+      containers:
+        - name: msa-auth
+          image: ghcr.io/coinwing/cowing-msa-auth:latest  
+          imagePullPolicy: Always
+          env:
+            - name: REDIS_HOST
+              value: "msa-auth-redis"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secret
+                  key: redis-password
+            - name: DB_URL
+              value: "jdbc:mariadb://common-mariadb:3306/cowingDB"
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mardiadb-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mardiadb-secret
+                  key: password
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: jwt-secret
+            - name: ACCESS_TOKEN_EXPIRE
+              value: "86400000"
+            - name: REFRESH_TOKEN_EXPIRE
+              value: "172800000"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 700Mi
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 100
+            periodSeconds: 30
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 100
+            periodSeconds: 15
+            failureThreshold: 5
+      imagePullSecrets:
+        - name: ghcr-login-secret

@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msa-front
+  namespace: cowing-prod
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: msa-front
+  template:
+    metadata:
+      labels:
+        app: msa-front
+    spec:
+      containers:
+      - name: msa-front
+        image: ghcr.io/coinwing/cowing-msa-front:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: WS_URL
+          value: "wss://ws.cowing.co.kr"
+        - name: UPBIT_API_URL
+          value: "https://api.upbit.com/v1"
+        resources:
+          requests:
+            memory: 1024Mi
+            cpu: 500m
+          limits:
+            memory: 2048Mi
+            cpu: 2000m
+      imagePullSecrets:
+        - name: ghcr-login-secret
