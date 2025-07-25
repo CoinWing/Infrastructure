@@ -18,6 +18,7 @@ spec:
       containers:
         - name: msa-broadcaster
           image: ghcr.io/coinwing/cowing-msa-broadcaster
+          imagePullPolicy: Always
           ports:
             - containerPort: 8083
           resources:
