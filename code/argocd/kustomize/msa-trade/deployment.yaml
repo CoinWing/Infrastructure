@@ -14,7 +14,6 @@ spec:
     metadata:
       labels:
         app: msa-trade
-        cowing: trade
     spec:
       containers:
       - name: msa-trade
