@@ -8,3 +8,4 @@ images:
 - name: ghcr.io/coinwing/cowing-msa-trade
   newName: ghcr.io/coinwing/cowing-msa-trade
   newTag: 2025.07.25-2b01bf9
+
