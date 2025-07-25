@@ -5,9 +5,6 @@ metadata:
   namespace: cowing-prod
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: msa-front
   template:
     metadata:
       labels:

@@ -7,9 +7,6 @@ metadata:
     app: msa-auth
 spec:
   replicas: 1
-  selector:
-    matchLabels:
-      app: msa-auth
   template:
     metadata:
       labels:
