@@ -3,8 +3,13 @@ kind: Deployment
 metadata:
   name: msa-trade
   namespace: cowing-prod
+  labels:
+    app: msa-trade
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: msa-trade
   template:
     metadata:
       labels:

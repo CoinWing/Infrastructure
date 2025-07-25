@@ -3,8 +3,13 @@ kind: Deployment
 metadata:
   name: msa-front
   namespace: cowing-prod
+  labels:
+    app: msa-front
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: msa-front
   template:
     metadata:
       labels:

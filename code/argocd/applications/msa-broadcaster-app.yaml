@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: msa-broadcaster
   namespace: argocd
+  labels:
+    app: msa-broadcaster
 spec:
   project: default
   source:

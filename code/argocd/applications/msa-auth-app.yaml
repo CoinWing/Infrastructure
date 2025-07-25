@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: msa-auth
   namespace: argocd
+  labels:
+    app: msa-auth
 spec:
   project: default
   source:

@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: msa-front
   namespace: argocd
+  labels:
+    app: msa-front
 spec:
   project: default
   source:

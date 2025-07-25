@@ -3,8 +3,13 @@ kind: Deployment
 metadata:
   name: msa-orderbook
   namespace: cowing-prod
+  labels:
+    app: msa-orderbook
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app: msa-orderbook
   template:
     metadata:
       labels:
