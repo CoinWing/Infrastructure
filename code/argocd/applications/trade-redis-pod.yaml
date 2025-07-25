@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: msa-trade-redis
+  namespace: cowing-prod
+  labels:
+    app: msa-trade-redis
+spec:
+  containers:
+  - name: msa-trade-redis
+    image: redis:alpine
+    env:
+    - name: REDIS_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: redis-secret     
+          key: redis-password   
+    command: ["redis-server", "--port", "6380", "--appendonly", "no", "--save", ""]
+    args: ["--requirepass", "$(REDIS_PASSWORD)"]
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: 200m
+        memory: 200Mi
+    ports:
+      - containerPort: 6380
