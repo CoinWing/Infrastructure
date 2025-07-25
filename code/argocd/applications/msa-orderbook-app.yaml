@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/CoinWing/Infrastructure
+    repoURL: https://github.com/CoinWing/Cowing-msa-orderbook.git
     path: code/argocd/kustomize/msa-orderbook
     targetRevision: prod
   destination:

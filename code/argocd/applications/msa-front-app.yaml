@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/CoinWing/Infrastructure
+    repoURL: https://github.com/CoinWing/front-service
     path: code/argocd/kustomize/msa-front
     targetRevision: prod
   destination:
