@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/CoinWing/front-service
+    repoURL: https://github.com/CoinWing/Infrastructure
     path: code/argocd/kustomize/msa-front
-    targetRevision: main
+    targetRevision: prod
   destination:
     server: https://kubernetes.default.svc
     namespace: cowing-prod

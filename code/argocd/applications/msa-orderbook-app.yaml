@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/CoinWing/Cowing-msa-orderbook
+    repoURL: https://github.com/CoinWing/Infrastructure
     path: code/argocd/kustomize/msa-orderbook
-    targetRevision: main
+    targetRevision: prod
   destination:
     server: https://kubernetes.default.svc
     namespace: cowing-prod
