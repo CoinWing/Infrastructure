@@ -6,4 +6,5 @@ resources:
 namespace: cowing-prod
 images:
 - name: ghcr.io/coinwing/cowing-msa-broadcaster
+  newName: ghcr.io/coinwing/cowing-msa-broadcaster
   newTag: latest
