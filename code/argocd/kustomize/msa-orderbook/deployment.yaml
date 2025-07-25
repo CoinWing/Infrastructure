@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: msa-orderbook
-        image: ghcr.io/coinwing/cowing-msa-orderbook:latest
+        image: ghcr.io/coinwing/cowing-msa-orderbook
         env:
         - name: REDIS_HOST
           value: "msa-trade-redis"

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: msa-front
-        image: ghcr.io/coinwing/cowing-msa-front:latest
+        image: ghcr.io/coinwing/cowing-msa-front
         ports:
         - containerPort: 3000
         env:
