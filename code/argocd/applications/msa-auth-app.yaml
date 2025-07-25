@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/CoinWing/Cowing-msa-auth
     path: code/argocd/kustomize/msa-auth
-    targetRevision: prod
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
     namespace: cowing-prod

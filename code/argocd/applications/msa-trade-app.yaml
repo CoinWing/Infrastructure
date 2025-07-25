@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/CoinWing/Cowing-msa-trading
     path: code/argocd/kustomize/msa-trade
-    targetRevision: prod
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
     namespace: cowing-prod

@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/CoinWing/front-service
     path: code/argocd/kustomize/msa-front
-    targetRevision: prod
+    targetRevision: main
   destination:
     server: https://kubernetes.default.svc
     namespace: cowing-prod
