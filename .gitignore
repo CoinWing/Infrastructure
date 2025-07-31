@@ -2,6 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos
 
 ### Terraform ###
+# Terraformer 를 활용하여 생성된 generated files
+code/terraform/generated/*
+
 # Local .terraform directories
 **/.terraform/*
 
