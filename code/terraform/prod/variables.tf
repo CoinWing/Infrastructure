@@ -1,0 +1,19 @@
+variable "project_name" {
+  type        = string
+  description = "Project name"
+}
+
+variable "env" {
+  type        = string
+  description = "Environment"
+}
+
+variable "region" {
+  type        = string
+  description = "Region"
+}
+
+variable "vpc_main_subnet" {
+  type        = string
+  description = "Main VPC subnet"
+}
