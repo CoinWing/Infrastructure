@@ -17,3 +17,8 @@ variable "vpc_main_subnet" {
   type        = string
   description = "Main VPC subnet"
 }
+
+variable "availability_zones" {
+  type        = list(string)
+  description = "Availability zones"
+}

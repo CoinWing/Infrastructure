@@ -42,3 +42,8 @@ variable "eks_worker_subnets" {
   type        = list(string)
   description = "EKS worker subnets"
 }
+
+variable "availability_zones" {
+  type        = list(string)
+  description = "Availability zones"
+}

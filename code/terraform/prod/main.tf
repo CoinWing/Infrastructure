@@ -10,4 +10,5 @@ module "network" {
   nat_instance_subnet = local.nat_instance_subnet
   rds_subnets = local.rds_subnets
   eks_worker_subnets = local.eks_worker_subnets
+  availability_zones = var.availability_zones
 }

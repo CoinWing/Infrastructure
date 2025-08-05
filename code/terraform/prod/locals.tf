@@ -1,4 +1,5 @@
 locals {
+  # PUBLIC SUBNETS
   public_subnets = [
     cidrsubnet(var.vpc_main_subnet, 8, 0), # x.x.0.0/24
     cidrsubnet(var.vpc_main_subnet, 8, 1), # x.x.1.0/24
@@ -6,6 +7,8 @@ locals {
   ]
   bastion_subnet = cidrsubnet(var.vpc_main_subnet, 8, 0) # x.x.0.0/24
   nat_instance_subnet = cidrsubnet(var.vpc_main_subnet, 8, 1) # x.x.1.0/24
+
+  # PRIVATE SUBNETS
   eks_worker_subnets = [
     cidrsubnet(var.vpc_main_subnet, 8, 3), # x.x.3.0/24
     cidrsubnet(var.vpc_main_subnet, 8, 4), # x.x.4.0/24
