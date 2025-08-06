@@ -7,4 +7,4 @@ namespace: cowing-prod
 images:
 - name: ghcr.io/coinwing/cowing-msa-broadcaster
   newName: ghcr.io/coinwing/cowing-msa-broadcaster
-  newTag: 2025.08.02-5e49738
+  newTag: 2025.08.06-700e329
