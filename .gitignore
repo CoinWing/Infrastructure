@@ -1,12 +1,15 @@
 # Created by https://www.toptal.com/developers/gitignore/api/macos
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos
 
-### BASTION HOST ###
+### Terraform ###
+# BASTION HOST
 bastion_key
 bastion_key.pub
 bastion-connect-*-result.txt
 
-### Terraform ###
+# Backend 설정 정보
+backend.hcl
+
 # Terraformer 를 활용하여 생성된 generated files
 code/terraform/generated/*
 
