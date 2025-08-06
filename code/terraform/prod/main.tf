@@ -23,3 +23,10 @@ module "ec2" {
   nat_instance_subnet_id = module.network.nat_instance_subnet_id
   nat_security_group_id = module.network.nat_instance_security_group_id
 }
+
+module "iam" {
+  source = "../modules/iam"
+
+  project_name = var.project_name
+  env = var.env
+}
