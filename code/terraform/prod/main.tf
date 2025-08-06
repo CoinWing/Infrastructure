@@ -41,3 +41,10 @@ module "s3" {
   project_name = var.project_name
   env = var.env
 }
+
+module "dynamodb" {
+  source = "../modules/dynamodb"
+
+  project_name = var.project_name
+  env = var.env
+}

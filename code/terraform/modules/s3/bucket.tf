@@ -3,7 +3,6 @@ resource "aws_s3_bucket" "terraform_state" {
 
   tags = {
     Name        = "${var.project_name}-${var.env}-terraform-state"
-    Environment = var.env
   }
 }
 
