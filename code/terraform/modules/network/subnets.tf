@@ -33,3 +33,13 @@ resource "aws_subnet" "rds_subnets" {
     Name = "${var.project_name}-${var.env}-rds-${index(var.rds_subnets, each.value) + 1}"
   }
 }
+
+resource "aws_subnet" "bastion_subnet" {
+  vpc_id     = aws_vpc.prod.id
+  cidr_block = var.bastion_subnet
+  availability_zone = var.availability_zones[2]
+
+  tags = {
+    Name = "${var.project_name}-${var.env}-bastion-private"
+  }
+}
