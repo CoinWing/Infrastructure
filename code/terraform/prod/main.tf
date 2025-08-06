@@ -22,6 +22,10 @@ module "ec2" {
   region = var.region
   nat_instance_subnet_id = module.network.nat_instance_subnet_id
   nat_security_group_id = module.network.nat_instance_security_group_id
+  bastion_instance_type = var.bastion_instance_type
+  bastion_subnet_id = module.network.bastion_subnet_id
+  bastion_security_group_id = module.network.bastion_host_security_group_id
+  bastion_instance_profile_name = module.iam.bastion_instance_profile_name
 }
 
 module "iam" {

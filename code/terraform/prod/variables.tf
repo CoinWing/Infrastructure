@@ -22,3 +22,8 @@ variable "availability_zones" {
   type        = list(string)
   description = "Availability zones"
 }
+
+variable "bastion_instance_type" {
+  type        = string
+  description = "Bastion instance type"
+}

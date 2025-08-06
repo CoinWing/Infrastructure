@@ -22,3 +22,23 @@ variable "nat_security_group_id" {
   type        = string
   description = "Security group ID for NAT instance"
 }
+
+variable "bastion_instance_type" {
+  type        = string
+  description = "Bastion instance type"
+}
+
+variable "bastion_subnet_id" {
+  type        = string
+  description = "Bastion subnet ID"
+}
+
+variable "bastion_security_group_id" {
+  type        = string
+  description = "Bastion security group ID"
+}
+
+variable "bastion_instance_profile_name" {
+  type        = string
+  description = "Bastion instance profile name"
+}
