@@ -20,22 +20,22 @@ resource "aws_route_table_association" "public_rt_association" {
 }
 
 # PRIVATE ROUTE TABLE
-# resource "aws_route_table" "private_nat_rt" {
-#   vpc_id = aws_vpc.prod.id
+resource "aws_route_table" "private_nat_rt" {
+  vpc_id = aws_vpc.prod.id
 
-#   route {
-#     cidr_block = "0.0.0.0/0"
-#     network_interface_id = aws_network_interface.nat_eni.id # NAT Instance의 ENI ID
-#   }
+  route {
+    cidr_block = "0.0.0.0/0"
+    network_interface_id = var.nat_instance_eni_id # NAT Instance의 ENI ID
+  }
 
-#   tags = { 
-#     Name = "${var.project_name}-${var.env}-private-nat-rt" 
-#   }
-# }
+  tags = { 
+    Name = "${var.project_name}-${var.env}-private-nat-rt" 
+  }
+}
 
-# resource "aws_route_table_association" "eks_workers_nat_rt_association" {
-#   for_each = aws_subnet.eks_worker_subnets
+resource "aws_route_table_association" "eks_workers_nat_rt_association" {
+  for_each = aws_subnet.eks_worker_subnets
 
-#   subnet_id      = each.value.id
-#   route_table_id = aws_route_table.private_nat_rt.id
-# }
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.private_nat_rt.id
+}

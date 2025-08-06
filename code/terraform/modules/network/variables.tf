@@ -47,3 +47,8 @@ variable "availability_zones" {
   type        = list(string)
   description = "Availability zones"
 }
+
+variable "nat_instance_eni_id" {
+  type        = string
+  description = "ENI ID of the NAT instance"
+}

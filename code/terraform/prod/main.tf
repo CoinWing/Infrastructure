@@ -11,6 +11,7 @@ module "network" {
   rds_subnets = local.rds_subnets
   eks_worker_subnets = local.eks_worker_subnets
   availability_zones = var.availability_zones
+  nat_instance_eni_id = module.ec2.nat_instance_eni_id
 }
 
 module "ec2" {
