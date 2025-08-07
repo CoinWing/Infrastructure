@@ -37,3 +37,8 @@ variable "eks_control_plane_security_group_id" {
   type        = string
   description = "EKS Control Plane Security Group ID"
 }
+
+variable "bastion_host_role_arn" {
+  type        = string
+  description = "Bastion host role ARN"
+}

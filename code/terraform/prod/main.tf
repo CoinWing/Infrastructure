@@ -60,4 +60,5 @@ module "eks" {
   eks_worker_subnet_ids = module.network.eks_worker_subnet_ids
   bastion_host_id = module.ec2.bastion_host_id
   eks_control_plane_security_group_id = module.network.eks_control_plane_security_group_id
+  bastion_host_role_arn = module.iam.bastion_host_role_arn
 }
