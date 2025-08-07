@@ -39,3 +39,8 @@ resource "aws_route_table_association" "eks_workers_nat_rt_association" {
   subnet_id      = each.value.id
   route_table_id = aws_route_table.private_nat_rt.id
 }
+
+resource "aws_route_table_association" "bastion_nat_rt_association" {
+  subnet_id      = aws_subnet.bastion_subnet.id
+  route_table_id = aws_route_table.private_nat_rt.id
+}

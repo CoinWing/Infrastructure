@@ -12,6 +12,13 @@ resource "aws_security_group" "nat_sg" {
     cidr_blocks = var.eks_worker_subnets
   }
 
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [var.bastion_subnet]
+  }
+
   # NAT instance에서 인터넷으로 나가는 트래픽 허용
   egress {
     from_port   = 0
