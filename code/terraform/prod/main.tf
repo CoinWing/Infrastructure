@@ -48,3 +48,19 @@ module "dynamodb" {
   project_name = var.project_name
   env = var.env
 }
+
+module "eks" {
+  source = "../modules/eks"
+
+  project_name = var.project_name
+  env = var.env
+  region = var.region
+  cluster_version = var.cluster_version
+  # node_group_instance_types = var.node_group_instance_types
+  # node_group_desired_size = var.node_group_desired_size
+  # node_group_min_size = var.node_group_min_size
+  # node_group_max_size = var.node_group_max_size
+  cluster_role_arn = module.iam.eks_cluster_role_arn
+  eks_worker_subnet_ids = module.network.eks_worker_subnet_ids
+  bastion_host_id = module.ec2.bastion_host_id
+}

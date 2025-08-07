@@ -27,3 +27,8 @@ output "bastion_host_security_group_id" {
   description = "Bastion host security group ID"
   value       = aws_security_group.bastion_host.id
 }
+
+output "eks_worker_subnet_ids" {
+  description = "EKS worker subnet IDs"
+  value       = values(aws_subnet.eks_worker_subnets)[*].id
+}
