@@ -1,5 +1,5 @@
 ## BASTION HOST ##
-# IAM Role for Bastion Host
+# SSM 접근 권한 추가
 resource "aws_iam_role" "bastion_host" {
   name_prefix = "${var.project_name}-${var.env}-bastion-host"
 
@@ -25,6 +25,32 @@ resource "aws_iam_role_policy_attachment" "bastion_host_ssm" {
   role       = aws_iam_role.bastion_host.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
+
+# Bastion host에 EKS 접근 권한 추가
+resource "aws_iam_policy" "bastion_host_eks_access" {
+  name        = "${var.project_name}-${var.env}-bastion-host-eks-access"
+  description = "Policy for bastion host to access EKS clusters"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster",
+          "eks:ListClusters"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "bastion_host_eks_access" {
+  role       = aws_iam_role.bastion_host.name
+  policy_arn = aws_iam_policy.bastion_host_eks_access.arn
+}
+
 
 ## EKS CLUSTER ##
 # EKS Cluster Role
