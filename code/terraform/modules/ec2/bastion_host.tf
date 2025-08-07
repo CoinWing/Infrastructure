@@ -19,11 +19,7 @@ resource "aws_instance" "bastion_host" {
   }
 
   # aws-cli와 kubectl 설치를 위한 user_data
-  user_data = base64encode(templatefile("${path.module}/bastion_host_userdata.sh", {
-    region       = var.region
-    project_name = var.project_name
-    env          = var.env
-  }))
+  user_data = base64encode(file("${path.module}/bastion_host_userdata.sh"))
 
   tags = {
     Name = "${var.project_name}-${var.env}-bastion-host"

@@ -26,7 +26,7 @@ resource "aws_iam_role_policy_attachment" "bastion_host_ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
-# Bastion host에 EKS 접근 권한 추가
+# Bastion Host Role에 EKS 접근 권한 추가
 resource "aws_iam_policy" "bastion_host_eks_access" {
   name        = "${var.project_name}-${var.env}-bastion-host-eks-access"
   description = "Policy for bastion host to access EKS clusters"
@@ -38,7 +38,8 @@ resource "aws_iam_policy" "bastion_host_eks_access" {
         Effect = "Allow"
         Action = [
           "eks:DescribeCluster",
-          "eks:ListClusters"
+          "eks:ListClusters",
+          "eks:AccessKubernetesApi"
         ]
         Resource = "*"
       }
