@@ -59,4 +59,5 @@ module "eks" {
   cluster_role_arn = module.iam.eks_cluster_role_arn
   eks_worker_subnet_ids = module.network.eks_worker_subnet_ids
   bastion_host_id = module.ec2.bastion_host_id
+  eks_control_plane_security_group_id = module.network.eks_control_plane_security_group_id
 }
