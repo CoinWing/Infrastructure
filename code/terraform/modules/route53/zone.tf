@@ -3,3 +3,63 @@
 resource "aws_route53_zone" "cowing_co_kr_zone" {
   name = "cowing.co.kr"
 }
+
+resource "aws_route53_record" "cowing_co_kr_apex_a" {
+  zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
+  name    = "cowing.co.kr"
+  type    = "A"
+
+  alias {
+    name                   = data.aws_lb.alb.dns_name
+    zone_id                = data.aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "cowing_co_kr_www_a" {
+  zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
+  name    = "www.cowing.co.kr"
+  type    = "A"
+
+  alias {
+    name                   = data.aws_lb.alb.dns_name
+    zone_id                = data.aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "cowing_co_kr_grafana_a" {
+  zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
+  name    = "grafana.cowing.co.kr"
+  type    = "A"
+
+  alias {
+    name                   = data.aws_lb.alb.dns_name
+    zone_id                = data.aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "cowing_co_kr_kiali_a" {
+  zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
+  name    = "kiali.cowing.co.kr"
+  type    = "A"
+
+  alias {
+    name                   = data.aws_lb.alb.dns_name
+    zone_id                = data.aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "cowing_co_kr_ws_a" {
+  zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
+  name    = "ws.cowing.co.kr"
+  type    = "A"
+
+  alias {
+    name                   = data.aws_lb.alb.dns_name
+    zone_id                = data.aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}

@@ -80,4 +80,8 @@ module "eks" {
 
 module "route53" {
   source = "../modules/route53"
+
+  project_name = var.project_name
+  env = var.env
+  cluster_name = "${var.project_name}-${var.env}-eks"
 }
