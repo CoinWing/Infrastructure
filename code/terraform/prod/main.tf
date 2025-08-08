@@ -52,13 +52,28 @@ module "dynamodb" {
 module "eks" {
   source = "../modules/eks"
 
+  # cluster variables
   project_name = var.project_name
   env = var.env
   region = var.region
   cluster_version = var.cluster_version
   cluster_role_arn = module.iam.eks_cluster_role_arn
+  cluster_name = "${var.project_name}-${var.env}-eks"
   eks_worker_subnet_ids = module.network.eks_worker_subnet_ids
   bastion_host_id = module.ec2.bastion_host_id
   eks_control_plane_security_group_id = module.network.eks_control_plane_security_group_id
   bastion_host_role_arn = module.iam.bastion_host_role_arn
+
+  # launch template variables
+  eks_worker_ng_lt_image_id = var.launch_template_image_id
+  eks_worker_ng_lt_instance_type = var.node_group_instance_type
+
+  # node group variables
+  eks_worker_ng_role_arn = module.iam.eks_worker_ng_role_arn
+  eks_worker_ng_subnet_ids = module.network.eks_worker_subnet_ids
+  eks_worker_ng_name = "${var.project_name}-${var.env}-eks-worker-ng"
+  eks_worker_ng_lt_id = module.eks.eks_worker_ng_lt_id
+  eks_worker_ng_desired_size = var.node_group_desired_size
+  eks_worker_ng_min_size = var.node_group_min_size
+  eks_worker_ng_max_size = var.node_group_max_size
 }

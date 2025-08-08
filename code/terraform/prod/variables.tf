@@ -33,9 +33,9 @@ variable "cluster_version" {
   description = "Cluster version"
 }
 
-variable "node_group_instance_types" {
-  type        = list(string)
-  description = "Node group instance types"
+variable "node_group_instance_type" {
+  type        = string
+  description = "Node group instance type"
 }
 
 variable "node_group_desired_size" {
@@ -51,4 +51,9 @@ variable "node_group_min_size" {
 variable "node_group_max_size" {
   type        = number
   description = "Node group max size"
+}
+
+variable "launch_template_image_id" {
+  type        = string
+  description = "Launch template image ID"
 }

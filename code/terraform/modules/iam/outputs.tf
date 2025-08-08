@@ -12,3 +12,8 @@ output "bastion_host_role_arn" {
   description = "Bastion host role ARN"
   value       = aws_iam_role.bastion_host.arn
 }
+
+output "eks_worker_ng_role_arn" {
+  description = "EKS worker node group role ARN"
+  value       = aws_iam_role.eks_worker_ng.arn
+}
