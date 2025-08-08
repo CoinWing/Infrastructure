@@ -29,7 +29,7 @@ rm -rf /tmp/eksctl
 cat << 'EOF' >> /root/.bashrc
 alias k=kubectl
 alias eks_provisioning=/usr/local/provisioning_eks_cluster.sh
-export PATH=/usr/local/bin:/usr/local/aws-cli/v2/current/bin:$PATH
+export PATH=/usr/local/bin:$PWD/bin:/usr/local/aws-cli/v2/current/bin:$PATH
 EOF
 
 source /root/.bashrc
@@ -43,6 +43,17 @@ source /root/.bashrc
 cat << 'EOF' >> /usr/local/provisioning_eks_cluster.sh
 # 클러스터 인증 정보 업데이트
 aws eks update-kubeconfig --region $1 --name $2
+kubectl create namespace cowing-prod
+
+# Istio 설치
+kubectl create namespace istio-system
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-*
+istioctl install --set profile=default -y
+kubectl label namespace cowing-prod istio-injection=enabled
+
+# Istio Ingress Gateway Serivce -> NodePort 변경
+kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
 # EKS 내부에 IAM Service Account 생성
 eksctl create iamserviceaccount \
