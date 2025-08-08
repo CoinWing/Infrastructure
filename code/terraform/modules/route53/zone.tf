@@ -1,12 +1,16 @@
 ## 주의 : public zone 생성 수 Third-Party Domain 제공 업체에 Name Server 정보 변경 필수
 # 연동 후 AWS Console 에서 Test Record 진행 후 정상 동작 확인 필수
 resource "aws_route53_zone" "cowing_co_kr_zone" {
-  name = "cowing.co.kr"
+  name = var.domain_name
+
+  tags = {
+    Name = "${var.project_name}-${var.env}-route53-zone-${var.domain_name}"
+  }
 }
 
 resource "aws_route53_record" "cowing_co_kr_apex_a" {
   zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
-  name    = "cowing.co.kr"
+  name    = var.domain_name
   type    = "A"
 
   alias {
@@ -18,7 +22,7 @@ resource "aws_route53_record" "cowing_co_kr_apex_a" {
 
 resource "aws_route53_record" "cowing_co_kr_www_a" {
   zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
-  name    = "www.cowing.co.kr"
+  name    = "www.${var.domain_name}"
   type    = "A"
 
   alias {
@@ -30,7 +34,7 @@ resource "aws_route53_record" "cowing_co_kr_www_a" {
 
 resource "aws_route53_record" "cowing_co_kr_grafana_a" {
   zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
-  name    = "grafana.cowing.co.kr"
+  name    = "grafana.${var.domain_name}"
   type    = "A"
 
   alias {
@@ -42,7 +46,7 @@ resource "aws_route53_record" "cowing_co_kr_grafana_a" {
 
 resource "aws_route53_record" "cowing_co_kr_kiali_a" {
   zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
-  name    = "kiali.cowing.co.kr"
+  name    = "kiali.${var.domain_name}"
   type    = "A"
 
   alias {
@@ -54,7 +58,7 @@ resource "aws_route53_record" "cowing_co_kr_kiali_a" {
 
 resource "aws_route53_record" "cowing_co_kr_ws_a" {
   zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
-  name    = "ws.cowing.co.kr"
+  name    = "ws.${var.domain_name}"
   type    = "A"
 
   alias {

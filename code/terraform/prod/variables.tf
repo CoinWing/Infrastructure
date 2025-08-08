@@ -57,3 +57,8 @@ variable "launch_template_image_id" {
   type        = string
   description = "Launch template image ID"
 }
+
+variable "domain_name" {
+  type        = string
+  description = "Domain name"
+}

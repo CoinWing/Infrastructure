@@ -84,4 +84,13 @@ module "route53" {
   project_name = var.project_name
   env = var.env
   cluster_name = "${var.project_name}-${var.env}-eks"
+  domain_name = var.domain_name
+}
+
+module "acm" {
+  source = "../modules/acm"
+
+  project_name = var.project_name
+  env = var.env
+  domain_name = var.domain_name
 }
