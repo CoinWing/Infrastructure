@@ -77,3 +77,7 @@ module "eks" {
   eks_worker_ng_min_size = var.node_group_min_size
   eks_worker_ng_max_size = var.node_group_max_size
 }
+
+module "route53" {
+  source = "../modules/route53"
+}
