@@ -30,21 +30,7 @@ resource "aws_iam_role_policy_attachment" "bastion_host_ssm" {
 resource "aws_iam_policy" "bastion_host_eks_access" {
   name        = "${var.project_name}-${var.env}-bastion-host-eks-access"
   description = "Policy for bastion host to access EKS clusters"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "eks:DescribeCluster",
-          "eks:ListClusters",
-          "eks:AccessKubernetesApi"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
+  policy      = file("${path.module}/bastion_host_policy.json")
 }
 
 resource "aws_iam_role_policy_attachment" "bastion_host_eks_access" {
@@ -123,4 +109,11 @@ resource "aws_iam_role_policy_attachment" "eks_worker_ng_AmazonEKS_CNI_Policy" {
 resource "aws_iam_role_policy_attachment" "eks_worker_ng_AmazonEC2ContainerRegistryReadOnly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_worker_ng.name
+}
+
+# ALB Ingress Controller IAM Policy
+resource "aws_iam_policy" "aws_load_balancer_controller_iam_policy" {
+  name        = "AWSLoadBalancerControllerIAMPolicy"
+  description = "IAM policy for AWS Load Balancer Controller"
+  policy      = file("${path.module}/alb_controller_policy.json")
 }

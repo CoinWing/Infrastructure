@@ -7,6 +7,7 @@ resource "aws_subnet" "public_subnets" {
 
   tags = {
     Name = "${var.project_name}-${var.env}-public-${index(var.public_subnets, each.value) + 1}"
+    "kubernetes.io/role/elb" = 1
   }
 }
 
@@ -19,6 +20,7 @@ resource "aws_subnet" "eks_worker_subnets" {
 
   tags = {
     Name = "${var.project_name}-${var.env}-eks-worker-${index(var.eks_worker_subnets, each.value) + 1}"
+    "kubernetes.io/role/internal-elb" = 1
   }
 }
 

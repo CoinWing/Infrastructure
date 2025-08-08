@@ -14,9 +14,62 @@ curl -LO "https://dl.k8s.io/release/v1.32.3/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/bin/
 
+# helm 설치
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+rm -rf get_helm.sh
+
+# eksctl 설치
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+mv /tmp/eksctl /usr/local/bin
+rm -rf /tmp/eksctl
+
+# .bashrc 설정
 cat << 'EOF' >> /root/.bashrc
 alias k=kubectl
-export PATH=/usr/local/aws-cli/v2/current/bin:$PATH
+alias eks_provisioning=/usr/local/provisioning_eks_cluster.sh
+export PATH=/usr/local/bin:/usr/local/aws-cli/v2/current/bin:$PATH
 EOF
 
 source /root/.bashrc
+
+### Provisioning EKS Cluster Script Add ###
+### 필독! ###
+# 프로비저닝 스크립트는 아래 명령어를 통해 터미널에서 권한을 얻은 후 실행해야 합니다.
+# 해당 부분은 EKS 클러스터가 재생성되는 경우가 많으므로 자동화 하지 않았습니다.
+# 프로비저닝 스크립트 실행 방법 : eks_provisioning 리전명 클러스터명
+# 예시) eks_provisioning ap-northeast-1 cowing-dev-eks
+cat << 'EOF' >> /usr/local/provisioning_eks_cluster.sh
+# 클러스터 인증 정보 업데이트
+aws eks update-kubeconfig --region $1 --name $2
+
+# EKS 내부에 IAM Service Account 생성
+eksctl create iamserviceaccount \
+  --region $1 \
+  --cluster=$2 \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --attach-policy-arn=arn:aws:iam::593793025731:policy/AWSLoadBalancerControllerIAMPolicy \
+  --approve
+
+# IAM OIDC Provider 연동
+eksctl utils associate-iam-oidc-provider \
+  --region $1 \
+  --cluster $2 \
+  --approve
+
+# cert-manager 설치
+kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
+
+# ALB Ingress Controller 설치
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update eks
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=$2 \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller
+EOF
+
+chmod +x /usr/local/provisioning_eks_cluster.sh
