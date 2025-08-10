@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: msa-broadcaster
-          image: ghcr.io/coinwing/cowing-msa-broadcaster
+          image: ghcr.io/coinwing/cowing-msa-broadcaster:latest
           ports:
             - containerPort: 8083
           resources:

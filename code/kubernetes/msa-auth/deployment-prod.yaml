@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: msa-auth
-          image: ghcr.io/coinwing/cowing-msa-auth
+          image: ghcr.io/coinwing/cowing-msa-auth:latest
           imagePullPolicy: Always
           env:
             - name: REDIS_HOST
