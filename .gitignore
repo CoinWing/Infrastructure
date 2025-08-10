@@ -2,6 +2,9 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos
 
 ### Terraform ###
+# K8S CERT ARN
+cert-arn.txt
+
 # BASTION HOST
 bastion_key
 bastion_key.pub
