@@ -93,4 +93,5 @@ module "acm" {
   project_name = var.project_name
   env = var.env
   domain_name = var.domain_name
+  cowing_co_kr_zone_id = module.route53.cowing_co_kr_zone_id
 }
