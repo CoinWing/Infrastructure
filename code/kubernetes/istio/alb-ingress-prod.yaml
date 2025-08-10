@@ -8,6 +8,9 @@ metadata:
     alb.ingress.kubernetes.io/certificate-arn: $(cat cert-arn.txt)
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
+    alb.ingress.kubernetes.io/healthcheck-port: "15021"
+    
 spec:
   ingressClassName: alb
   rules:

@@ -3,6 +3,10 @@
 # 시스템 업데이트
 yum update -y
 
+# Git 설치
+yum install git -y
+git clone https://github.com/CoinWing/Infrastructure.git
+
 # AWS CLI v2 설치
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
@@ -83,4 +87,6 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set serviceAccount.name=aws-load-balancer-controller
 EOF
 
+# TODO
+# cert-arn.txt 적용 부분 자동화 필요
 chmod +x /usr/local/provisioning_eks_cluster.sh
