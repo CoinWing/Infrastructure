@@ -37,3 +37,13 @@ output "eks_control_plane_security_group_id" {
   description = "EKS control plane security group ID"
   value       = aws_security_group.eks_control_plane.id
 }
+
+output "rds_db_subnet_ids" {
+  description = "RDS DB subnet IDs"
+  value       = values(aws_subnet.rds_subnets)[*].id
+}
+
+output "rds_security_group_id" {
+  description = "RDS security group ID"
+  value       = aws_security_group.eks_to_rds_sg.id
+}

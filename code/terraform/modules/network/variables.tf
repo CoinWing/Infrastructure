@@ -52,3 +52,8 @@ variable "nat_instance_eni_id" {
   type        = string
   description = "ENI ID of the NAT instance"
 }
+
+variable "rds_port" {
+  type        = string
+  description = "RDS port"
+}

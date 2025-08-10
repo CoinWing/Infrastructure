@@ -103,3 +103,20 @@ resource "aws_security_group" "eks_control_plane" {
     Name = "${var.project_name}-${var.env}-eks-control-plane-sg"
   }
 }
+
+### RDS SETTINGS ###
+resource "aws_security_group" "eks_to_rds_sg" {
+  name_prefix = "${var.project_name}-${var.env}-eks-to-rds"
+  vpc_id      = aws_vpc.prod.id
+
+  ingress {
+    from_port   = var.rds_port
+    to_port     = var.rds_port
+    protocol    = "tcp"
+    cidr_blocks = var.eks_worker_subnets
+  }
+
+  tags = {
+    Name = "${var.project_name}-${var.env}-eks-to-rds-sg"
+  }
+}

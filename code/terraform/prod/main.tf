@@ -12,6 +12,7 @@ module "network" {
   eks_worker_subnets = local.eks_worker_subnets
   availability_zones = var.availability_zones
   nat_instance_eni_id = module.ec2.nat_instance_eni_id
+  rds_port = var.rds_port
 }
 
 module "ec2" {
@@ -94,4 +95,21 @@ module "acm" {
   env = var.env
   domain_name = var.domain_name
   cowing_co_kr_zone_id = module.route53.cowing_co_kr_zone_id
+}
+
+module "rds" {
+  source = "../modules/rds"
+
+  project_name = var.project_name
+  env = var.env
+  rds_port = var.rds_port
+  rds_db_name = var.rds_db_name
+  rds_engine = var.rds_engine
+  rds_engine_version = var.rds_engine_version
+  rds_instance_type = var.rds_instance_type
+  rds_username = var.rds_username
+  rds_password = var.rds_password  
+  rds_security_group_id = module.network.rds_security_group_id
+  rds_db_subnet_ids = module.network.rds_db_subnet_ids
+  rds_parameter_group_family = var.rds_parameter_group_family
 }

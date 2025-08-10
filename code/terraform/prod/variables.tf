@@ -62,3 +62,43 @@ variable "domain_name" {
   type        = string
   description = "Domain name"
 }
+
+variable "rds_instance_type" {
+  type        = string
+  description = "RDS instance type"
+}
+
+variable "rds_db_name" {
+  type        = string
+  description = "RDS database name"
+}
+
+variable "rds_username" {
+  type        = string
+  description = "RDS username"
+}
+
+variable "rds_password" {
+  type        = string
+  description = "RDS password"
+}
+
+variable "rds_engine" {
+  type        = string
+  description = "RDS engine"
+}
+
+variable "rds_engine_version" {
+  type        = string
+  description = "RDS engine version"
+}
+
+variable "rds_port" {
+  type        = string
+  description = "RDS port"
+}
+
+variable "rds_parameter_group_family" {
+  type        = string
+  description = "RDS parameter group family"
+}
