@@ -5,7 +5,7 @@ metadata:
   namespace: istio-system
   annotations:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/certificate-arn: $(cat cert-arn.txt)
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-northeast-2:593793025731:certificate/6eb67d98-6c15-4854-81fb-99cc8a9c4c03
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/healthcheck-path: /healthz/ready
