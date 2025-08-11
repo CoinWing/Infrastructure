@@ -20,10 +20,10 @@ spec:
           image: redis:alpine
           env:
           - name: REDIS_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: redis-secret
-              key: redis-password
+            valueFrom:
+              secretKeyRef:
+                name: redis-secret
+                key: redis-password
           command: ["redis-server", "--port", "6381", "--appendonly", "yes", "--appendfilename", "appendonly.aof", "--save", "60 500"]
           args: ["--requirepass", "$(REDIS_PASSWORD)"]
           resources:

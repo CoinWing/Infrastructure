@@ -19,11 +19,11 @@ spec:
         - name: auth-redis
           image: redis:alpine
           env:
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: redis-secret
-                  key: redis-password
+          - name: REDIS_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: redis-secret
+                key: redis-password
           command: ["sh", "-c"]
           args:
             - |
