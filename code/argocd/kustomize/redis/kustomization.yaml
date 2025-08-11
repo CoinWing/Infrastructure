@@ -8,7 +8,3 @@ resources:
 - orderbook-redis.yaml
 - orderbook-redis-svc.yaml
 namespace: cowing-prod
-images:
-- name: ghcr.io/coinwing/cowing-msa-orderbook
-  newName: ghcr.io/coinwing/cowing-msa-orderbook
-  newTag: 2025.08.02-9cc711c
