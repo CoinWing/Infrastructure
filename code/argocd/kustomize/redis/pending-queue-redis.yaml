@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: pending-queue-redis
   namespace: cowing-prod
   labels:
     app: pending-queue-redis
 spec:
+  serviceName: pending-queue-redis
   replicas: 1
   selector:
     matchLabels:
@@ -24,8 +25,18 @@ spec:
               secretKeyRef:
                 name: redis-secret
                 key: redis-password
-          command: ["redis-server", "--port", "6381", "--appendonly", "yes", "--appendfilename", "appendonly.aof", "--save", "60 500"]
-          args: ["--requirepass", "$(REDIS_PASSWORD)"]
+          command: ["redis-server"]
+          args: 
+            - "--port"
+            - "6381"
+            - "--appendonly"
+            - "yes"
+            - "--appendfilename"
+            - "appendonly.aof"
+            - "--save"
+            - "60 500"
+            - "--requirepass"
+            - "$(REDIS_PASSWORD)"
           resources:
             requests:
               cpu: 100m
@@ -35,3 +46,14 @@ spec:
               memory: 200Mi
           ports:
             - containerPort: 6381
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+  volumeClaimTemplates:
+    - metadata:
+        name: redis-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
