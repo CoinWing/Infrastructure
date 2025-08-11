@@ -32,6 +32,18 @@ resource "aws_route53_record" "cowing_co_kr_www_a" {
   }
 }
 
+resource "aws_route53_record" "cowing_co_kr_api_a" {
+  zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
+  name    = "api.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = data.aws_lb.alb.dns_name
+    zone_id                = data.aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}
+
 resource "aws_route53_record" "cowing_co_kr_grafana_a" {
   zone_id = aws_route53_zone.cowing_co_kr_zone.zone_id
   name    = "grafana.${var.domain_name}"
