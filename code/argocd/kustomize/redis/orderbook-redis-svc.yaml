@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Service
 metadata:
-  name: msa-trade-redis
+  name: orderbook-redis
   namespace: cowing-prod
 spec:
   selector:
-    app: msa-trade-redis
+    app: orderbook-redis
   ports:
   - protocol: TCP
     port: 6380 # 서비스가 노출할 포트

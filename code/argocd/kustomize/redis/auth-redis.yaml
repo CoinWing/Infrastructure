@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: msa-auth-redis
+  name: auth-redis
   namespace: cowing-prod
   labels:
-    app: msa-auth-redis
+    app: auth-redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: msa-auth-redis
+      app: auth-redis
   template:
     metadata:
       labels:
-        app: msa-auth-redis
+        app: auth-redis
     spec:
       containers:
-        - name: msa-auth-redis
+        - name: auth-redis
           image: redis:alpine
           env:
             - name: REDIS_PASSWORD

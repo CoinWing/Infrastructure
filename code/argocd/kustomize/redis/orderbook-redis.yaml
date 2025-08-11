@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: msa-trade-redis
+  name: orderbook-redis
   namespace: cowing-prod
   labels:
-    app: msa-trade-redis
+    app: orderbook-redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: msa-trade-redis
+      app: orderbook-redis
   template:
     metadata:
       labels:
-        app: msa-trade-redis
+        app: orderbook-redis
     spec:
       containers:
-        - name: msa-trade-redis
+        - name: orderbook-redis
           image: redis:alpine
           env:
           - name: REDIS_PASSWORD

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis-all
+  namespace: argocd
+  labels:
+    app: redis-all
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/CoinWing/Infrastructure.git
+    path: code/argocd/kustomize/redis
+    targetRevision: prod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cowing-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: true
+    syncOptions:
+      - CreateNamespace=true
