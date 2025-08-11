@@ -10,3 +10,4 @@ spec:
   - protocol: TCP
     port: 6380 # 서비스가 노출할 포트
     targetPort: 6380 # 파드의 컨테이너 포트
+  type: ClusterIP

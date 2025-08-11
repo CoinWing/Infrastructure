@@ -12,3 +12,4 @@ spec:
     - protocol: TCP
       port: 6381
       targetPort: 6381
+  type: ClusterIP
