@@ -113,3 +113,12 @@ module "rds" {
   rds_db_subnet_ids = module.network.rds_db_subnet_ids
   rds_parameter_group_family = var.rds_parameter_group_family
 }
+
+module "sqs" {
+  source = "../modules/sqs"
+
+  project_name = var.project_name
+  env          = var.env
+  queue_name   = "Cowing.fifo"
+  fifo         = true
+}
