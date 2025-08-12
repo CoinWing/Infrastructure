@@ -106,6 +106,11 @@ resource "aws_iam_role_policy_attachment" "eks_worker_ng_AmazonEKS_CNI_Policy" {
   role       = aws_iam_role.eks_worker_ng.name
 }
 
+resource "aws_iam_role_policy_attachment" "eks_worker_ng_AmazonEC2ContainerRegistryReadOnly" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  role       = aws_iam_role.eks_worker_ng.name
+}
+
 # ALB Ingress Controller IAM Policy
 resource "aws_iam_policy" "aws_load_balancer_controller_iam_policy" {
   name        = "AWSLoadBalancerControllerIAMPolicy"
