@@ -92,4 +92,16 @@ EOF
 
 # TODO
 # cert-arn.txt 적용 부분 자동화 필요
+# 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
+# ALB 생성 후 Route53 레코드 업데이트를 위해 Terraform apply 실행 필수
+# Route53 레코드 업데이트 후 NS 레코드 변경되는 경우 있으니, 가비아에서 확인 필수
 chmod +x /usr/local/provisioning_eks_cluster.sh
+
+# 테스트용 코드
+# kubectl exec -it msa-front-podId -n cowing-prod -- wget -qO- http://localhost:3000/ | head -20
+# kubectl exec -it test-pod -n cowing-prod -- curl http://msa-front:3000/
+# kubectl exec -it test-pod -n cowing-prod -- curl -s -H "Host: cowing.co.kr" http://msa-front:3000/
+# kubectl exec -it test-pod -n cowing-prod -- curl -s -H "Host: cowing.co.kr" http://istio-ingressgateway.istio-system.svc.cluster.local/
+# curl -s -H "Host: cowing.co.kr" http://k8s-istiosys-albingre-31ac82b7d4-1550880697.ap-northeast-2.elb.amazonaws.com
+# curl -s -H "Host: cowing.co.kr" https://k8s-istiosys-albingre-31ac82b7d4-1550880697.ap-northeast-2.elb.amazonaws.com
+# curl -s -H "Host: cowing.co.kr" https://cowing.co.kr
