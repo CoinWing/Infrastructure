@@ -24,7 +24,7 @@ metadata:
     app.kubernetes.io/instance: grafana
     app.kubernetes.io/version: "11.3.1"
 data:
-
+  
   grafana.ini: |
     [analytics]
     check_for_updates = true
@@ -42,58 +42,58 @@ data:
   datasources.yaml: |
     apiVersion: 1
     datasources:
-      - access: proxy
-        editable: true
-        isDefault: true
-        jsonData:
-          timeInterval: 15s
-        name: Prometheus
-        orgId: 1
-        type: prometheus
-        url: http://prometheus:9090
-      - access: proxy
-        editable: true
-        isDefault: false
-        jsonData:
-          timeInterval: 5s
-        name: Loki
-        orgId: 1
-        type: loki
-        url: http://loki:3100
-      - name: CloudWatch
-        type: cloudwatch
-        access: proxy
-        orgId: 1
-        editable: true
-        jsonData:
-          authType: default
-          defaultRegion: ap-northeast-2
+    - access: proxy
+      editable: true
+      isDefault: true
+      jsonData:
+        timeInterval: 15s
+      name: Prometheus
+      orgId: 1
+      type: prometheus
+      url: http://prometheus:9090
+    - access: proxy
+      editable: true
+      isDefault: false
+      jsonData:
+        timeInterval: 5s
+      name: Loki
+      orgId: 1
+      type: loki
+      url: http://loki:3100
+    - name: CloudWatch
+      type: cloudwatch
+      access: proxy
+      orgId: 1
+      editable: true
+      jsonData:
+        authType: default
+        defaultRegion: ap-northeast-2
   dashboardproviders.yaml: |
     apiVersion: 1
     providers:
-      - disableDeletion: false
-        folder: istio
-        name: istio
-        options:
-          path: /var/lib/grafana/dashboards/istio
-        orgId: 1
-        type: file
-      - disableDeletion: false
-        folder: istio
-        name: istio-services
-        options:
-          path: /var/lib/grafana/dashboards/istio-services
-        orgId: 1
-        type: file
-      - disableDeletion: false
-        folder: msa
-        name: msa-services
-        options:
-          path: /var/lib/grafana/dashboards/monitoring
-        orgId: 1
-        type: file
-
-
+    - disableDeletion: false
+      folder: istio
+      name: istio
+      options:
+        path: /var/lib/grafana/dashboards/istio
+      orgId: 1
+      type: file
+    - disableDeletion: false
+      folder: istio
+      name: istio-services
+      options:
+        path: /var/lib/grafana/dashboards/istio-services
+      orgId: 1
+      type: file
+    - disableDeletion: false
+      folder: msa
+      name: msa-services
+      options:
+        path: /var/lib/grafana/dashboards/monitoring
+      orgId: 1
+      type: file
+    
+    
 ---
 # Source: grafana/templates/service.yaml
 apiVersion: v1
@@ -152,7 +152,7 @@ spec:
         checksum/sc-dashboard-provider-config: e70bf6a851099d385178a76de9757bb0bef8299da6d8443602590e44f05fdf24
         kubectl.kubernetes.io/default-container: grafana
     spec:
-
+      
       serviceAccountName: grafana
       automountServiceAccountToken: true
       enableServiceLinks: true
@@ -164,7 +164,7 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
-                - ALL
+              - ALL
             seccompProfile:
               type: RuntimeDefault
           volumeMounts:
@@ -250,8 +250,8 @@ spec:
             name: grafana-alerting-config
         - name: storage
           emptyDir: {}
-
-
+        
+        
 ---
 
 apiVersion: v1
@@ -1173,243 +1173,243 @@ data:
               use_discord_username: false
             disableResolveMessage: false
     groups:
-      - orgId: 1
-        name: Cluster
-        folder: Cluster
-        interval: 1m
-        rules:
-          - uid: ceumtp8mz0q9sc
-            title: Cluster memory usage
-            condition: C
-            data:
-              - refId: A
-                relativeTimeRange:
-                  from: 600
-                  to: 0
-                datasourceUid: PBFA97CFB590B2093
-                model:
-                  datasource:
-                    type: prometheus
-                    uid: PBFA97CFB590B2093
-                  editorMode: code
-                  expr: "sum(container_memory_working_set_bytes{id=\"/\"})\r\n/\r\nsum(machine_memory_bytes)\r\n* 100\r\n"
-                  instant: true
-                  intervalMs: 1000
-                  legendFormat: __auto
-                  maxDataPoints: 43200
-                  range: false
-                  refId: A
-              - refId: B
-                datasourceUid: __expr__
-                model:
-                  conditions:
-                    - evaluator:
-                        params: []
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                          - B
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                  datasource:
-                    type: __expr__
-                    uid: __expr__
-                  expression: A
-                  intervalMs: 1000
-                  maxDataPoints: 43200
-                  reducer: last
-                  refId: B
-                  type: reduce
-              - refId: C
-                datasourceUid: __expr__
-                model:
-                  conditions:
-                    - evaluator:
-                        params:
-                          - 70
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                          - C
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                  datasource:
-                    type: __expr__
-                    uid: __expr__
-                  expression: B
-                  intervalMs: 1000
-                  maxDataPoints: 43200
-                  refId: C
-                  type: threshold
-            noDataState: NoData
-            execErrState: Error
-            for: 1m
-            annotations:
-              description: 클러스터의 메모리 사용량이 70%를 넘었습니다
-              summary: 클러스터 메모리 사용량 경고
-            isPaused: false
-            notification_settings:
-              receiver: discord
-          - uid: beumumg06qtxcc
-            title: Cluster CPU usage
-            condition: C
-            data:
-              - refId: A
-                relativeTimeRange:
-                  from: 600
-                  to: 0
-                datasourceUid: PBFA97CFB590B2093
-                model:
-                  editorMode: code
-                  expr: "sum(rate(container_cpu_usage_seconds_total{id=\"/\"}[1m]))\r\n/\r\nsum(machine_cpu_cores)\r\n* 100"
-                  instant: true
-                  intervalMs: 1000
-                  legendFormat: __auto
-                  maxDataPoints: 43200
-                  range: false
-                  refId: A
-              - refId: B
-                datasourceUid: __expr__
-                model:
-                  conditions:
-                    - evaluator:
-                        params: []
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                          - B
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                  datasource:
-                    type: __expr__
-                    uid: __expr__
-                  expression: A
-                  intervalMs: 1000
-                  maxDataPoints: 43200
-                  reducer: last
-                  refId: B
-                  type: reduce
-              - refId: C
-                datasourceUid: __expr__
-                model:
-                  conditions:
-                    - evaluator:
-                        params:
-                          - 70
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                          - C
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                  datasource:
-                    type: __expr__
-                    uid: __expr__
-                  expression: B
-                  intervalMs: 1000
-                  maxDataPoints: 43200
-                  refId: C
-                  type: threshold
-            noDataState: NoData
-            execErrState: Error
-            for: 1m
-            annotations:
-              description: 클러스터 CPU 사용량이 70% 이상입니다
-              summary: 클러스터 CPU 사용량 경고
-            isPaused: false
-            notification_settings:
-              receiver: discord
-          - uid: eeumuqml0e41sd
-            title: Cluster filesystem usage
-            condition: C
-            data:
-              - refId: A
-                relativeTimeRange:
-                  from: 600
-                  to: 0
-                datasourceUid: PBFA97CFB590B2093
-                model:
-                  editorMode: code
-                  expr: "sum(container_fs_usage_bytes{device=~\"^/dev/.*$\", id=\"/\"}) \r\n/ \r\nsum(container_fs_limit_bytes{device=~\"^/dev/.*$\", id=\"/\"}) \r\n* 100\r\n"
-                  instant: true
-                  intervalMs: 1000
-                  legendFormat: __auto
-                  maxDataPoints: 43200
-                  range: false
-                  refId: A
-              - refId: B
-                datasourceUid: __expr__
-                model:
-                  conditions:
-                    - evaluator:
-                        params: []
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                          - B
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                  datasource:
-                    type: __expr__
-                    uid: __expr__
-                  expression: A
-                  intervalMs: 1000
-                  maxDataPoints: 43200
-                  reducer: last
-                  refId: B
-                  type: reduce
-              - refId: C
-                datasourceUid: __expr__
-                model:
-                  conditions:
-                    - evaluator:
-                        params:
-                          - 70
-                        type: gt
-                      operator:
-                        type: and
-                      query:
-                        params:
-                          - C
-                      reducer:
-                        params: []
-                        type: last
-                      type: query
-                  datasource:
-                    type: __expr__
-                    uid: __expr__
-                  expression: B
-                  intervalMs: 1000
-                  maxDataPoints: 43200
-                  refId: C
-                  type: threshold
-            noDataState: NoData
-            execErrState: Error
-            for: 1m
-            annotations:
-              description: Cluster filesystem usage이 70% 이상입니다.
-              summary: 클러스터 filesystem 사용량 경고
-            isPaused: false
-            notification_settings:
-              receiver: discord
+        - orgId: 1
+          name: Cluster
+          folder: Cluster
+          interval: 1m
+          rules:
+            - uid: ceumtp8mz0q9sc
+              title: Cluster memory usage
+              condition: C
+              data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 600
+                    to: 0
+                  datasourceUid: PBFA97CFB590B2093
+                  model:
+                    datasource:
+                        type: prometheus
+                        uid: PBFA97CFB590B2093
+                    editorMode: code
+                    expr: "sum(container_memory_working_set_bytes{id=\"/\"})\r\n/\r\nsum(machine_memory_bytes)\r\n* 100\r\n"
+                    instant: true
+                    intervalMs: 1000
+                    legendFormat: __auto
+                    maxDataPoints: 43200
+                    range: false
+                    refId: A
+                - refId: B
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                        - evaluator:
+                            params: []
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: A
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    reducer: last
+                    refId: B
+                    type: reduce
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                        - evaluator:
+                            params:
+                                - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - C
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: B
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: C
+                    type: threshold
+              noDataState: NoData
+              execErrState: Error
+              for: 1m
+              annotations:
+                description: 클러스터의 메모리 사용량이 80%를 넘었습니다 
+                summary: 클러스터 메모리 사용량 경고
+              isPaused: false
+              notification_settings:
+                receiver: discord
+            - uid: beumumg06qtxcc
+              title: Cluster CPU usage
+              condition: C
+              data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 600
+                    to: 0
+                  datasourceUid: PBFA97CFB590B2093
+                  model:
+                    editorMode: code
+                    expr: "sum(rate(container_cpu_usage_seconds_total{id=\"/\"}[1m]))\r\n/\r\nsum(machine_cpu_cores)\r\n* 100"
+                    instant: true
+                    intervalMs: 1000
+                    legendFormat: __auto
+                    maxDataPoints: 43200
+                    range: false
+                    refId: A
+                - refId: B
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                        - evaluator:
+                            params: []
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: A
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    reducer: last
+                    refId: B
+                    type: reduce
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                        - evaluator:
+                            params:
+                                - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - C
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: B
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: C
+                    type: threshold
+              noDataState: NoData
+              execErrState: Error
+              for: 1m
+              annotations:
+                description: 클러스터 CPU 사용량이 80% 이상입니다
+                summary: 클러스터 CPU 사용량 경고
+              isPaused: false
+              notification_settings:
+                receiver: discord
+            - uid: eeumuqml0e41sd
+              title: Cluster filesystem usage
+              condition: C
+              data:
+                - refId: A
+                  relativeTimeRange:
+                    from: 600
+                    to: 0
+                  datasourceUid: PBFA97CFB590B2093
+                  model:
+                    editorMode: code
+                    expr: "sum(container_fs_usage_bytes{device=~\"^/dev/.*$\", id=\"/\"}) \r\n/ \r\nsum(container_fs_limit_bytes{device=~\"^/dev/.*$\", id=\"/\"}) \r\n* 100\r\n"
+                    instant: true
+                    intervalMs: 1000
+                    legendFormat: __auto
+                    maxDataPoints: 43200
+                    range: false
+                    refId: A
+                - refId: B
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                        - evaluator:
+                            params: []
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - B
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: A
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    reducer: last
+                    refId: B
+                    type: reduce
+                - refId: C
+                  datasourceUid: __expr__
+                  model:
+                    conditions:
+                        - evaluator:
+                            params:
+                                - 80
+                            type: gt
+                          operator:
+                            type: and
+                          query:
+                            params:
+                                - C
+                          reducer:
+                            params: []
+                            type: last
+                          type: query
+                    datasource:
+                        type: __expr__
+                        uid: __expr__
+                    expression: B
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: C
+                    type: threshold
+              noDataState: NoData
+              execErrState: Error
+              for: 1m
+              annotations:
+                description: Cluster filesystem usage이 80% 이상입니다.
+                summary: 클러스터 filesystem 사용량 경고
+              isPaused: false
+              notification_settings:
+                receiver: discord    
 ---
