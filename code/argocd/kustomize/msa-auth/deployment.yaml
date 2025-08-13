@@ -30,7 +30,7 @@ spec:
                   name: redis-secret
                   key: redis-password
             - name: DB_URL
-              value: jdbc:mariadb://common-mariadb/cowingDB
+              value: "jdbc:mariadb://common-mariadb/cowingDB"
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -63,14 +63,14 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 100
+            initialDelaySeconds: 60
             periodSeconds: 30
             failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8080
-            initialDelaySeconds: 100
+            initialDelaySeconds: 60
             periodSeconds: 15
             failureThreshold: 5
       imagePullSecrets:
