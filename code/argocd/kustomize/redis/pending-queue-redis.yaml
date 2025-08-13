@@ -23,8 +23,8 @@ spec:
           - name: REDIS_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: redis-secret
-                key: redis-password
+                name: trade-config
+                key: pd-redis-password
           command: ["redis-server"]
           args: 
             - "--port"
