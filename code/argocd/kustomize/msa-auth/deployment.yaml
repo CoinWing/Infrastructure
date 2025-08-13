@@ -30,7 +30,7 @@ spec:
                   name: redis-secret
                   key: redis-password
             - name: DB_URL
-              value: "jdbc:mariadb://common-mariadb:3306/cowingDB"
+              value: jdbc:mariadb://common-mariadb/cowingDB
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
