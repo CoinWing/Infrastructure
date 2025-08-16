@@ -29,12 +29,8 @@ spec:
                 secretKeyRef:
                   name: redis-secret
                   key: redis-password
-            - name: DB_HOST
-              value: "common-mariadb"
-            - name: DB_PORT
-              value: "3306"
-            - name: DB_NAME
-              value: "cowingDB"
+            - name: DB_URL
+              value: "jdbc:mariadb://common-mariadb/cowingDB"
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -63,19 +59,5 @@ spec:
               memory: 700Mi
           ports:
             - containerPort: 8080
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8080
-            initialDelaySeconds: 100
-            periodSeconds: 30
-            failureThreshold: 5
-          readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8080
-            initialDelaySeconds: 100
-            periodSeconds: 15
-            failureThreshold: 5
       imagePullSecrets:
         - name: ghcr-login-secret

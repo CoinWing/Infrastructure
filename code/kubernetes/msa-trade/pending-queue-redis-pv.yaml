@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pending-queue-redis-pv
+  labels:
+    type: local
+spec:
+  storageClassName: "" 
+  capacity:
+    storage: 1Gi 
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  hostPath:
+    path: "/mnt/data/pending-queue-redis"

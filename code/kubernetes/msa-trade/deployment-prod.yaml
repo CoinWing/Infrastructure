@@ -46,6 +46,37 @@ spec:
             secretKeyRef:
               name: jwt-secret
               key: jwt-secret
+        - name: QUEUE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: trade-config
+              key: queue-name
+        - name: PD_REDIS_HOST
+          value: "pending-queue-redis"
+        - name: PD_REDIS_PORT
+          value: "6381"
+        - name: PD_REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: trade-config
+              key: pd-redis-password
+        - name: ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trade-config
+              key: access-key
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: trade-config
+              key: secret-key
+        - name: REGION
+          value: "ap-northeast-2"
+        - name: SQS_URI
+          valueFrom:
+            secretKeyRef:
+              name: trade-config
+              key: sqs-uri
         resources:
           requests:
             cpu: 250m
