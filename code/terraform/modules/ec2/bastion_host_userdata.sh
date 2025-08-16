@@ -62,6 +62,14 @@ kubectl label namespace cowing-prod istio-injection=enabled
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
 # EKS 내부에 IAM Service Account 생성
+eksctl delete iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace kube-system \
+  --name aws-load-balancer-controller \
+
+sleep 45 # 45초 대기
+
 eksctl create iamserviceaccount \
   --region $1 \
   --cluster $2 \
