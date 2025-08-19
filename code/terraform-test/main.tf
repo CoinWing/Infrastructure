@@ -61,7 +61,7 @@ module "lambda" {
   zip_path       = "${path.module}/lambda/lambda-trigger-sm.zip"
   timeout        = 120
 }
- 
+
 module "sqs" {
   source = "./modules/sqs"
 

@@ -15,10 +15,10 @@ variable "lambda_name" {
   type        = string
   default     = "upload_trigger_lambda"
 }
- 
+
 variable "enable_ec2" {
   description = "Enable creation of EC2 test stack (VPC, subnets, SGs, bastion, NAT)"
   type        = bool
   default     = false
 }
- 
+

@@ -7,7 +7,7 @@ locals {
 }
 
 resource "aws_vpc" "test" {
-  count               = var.enable_ec2 ? 1 : 0
+  count                = var.enable_ec2 ? 1 : 0
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -92,13 +92,13 @@ resource "aws_security_group" "nat_sg" {
 }
 
 resource "aws_instance" "nat_instance" {
-  count         = var.enable_ec2 ? 1 : 0
-  ami           = local.test_ami_id
-  instance_type = local.nat_instance_type
-  subnet_id     = aws_subnet.public_a[0].id
+  count                  = var.enable_ec2 ? 1 : 0
+  ami                    = local.test_ami_id
+  instance_type          = local.nat_instance_type
+  subnet_id              = aws_subnet.public_a[0].id
   vpc_security_group_ids = [aws_security_group.nat_sg[0].id]
-  source_dest_check = false
-  tags = { Name = "ec2-test-nat-instance" }
+  source_dest_check      = false
+  tags                   = { Name = "ec2-test-nat-instance" }
 }
 
 resource "aws_instance" "bastion_host" {
@@ -117,9 +117,9 @@ resource "aws_instance" "bastion_host" {
 }
 
 output "nat_instance_eni_id_test" {
-  value       = var.enable_ec2 ? aws_instance.nat_instance[0].primary_network_interface_id : null
+  value = var.enable_ec2 ? aws_instance.nat_instance[0].primary_network_interface_id : null
 }
 
 output "bastion_host_id_test" {
-  value       = var.enable_ec2 ? aws_instance.bastion_host[0].id : null
+  value = var.enable_ec2 ? aws_instance.bastion_host[0].id : null
 }

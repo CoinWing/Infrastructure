@@ -1,28 +1,28 @@
 variable "function_name" {
-	type = string
+  type = string
 }
 
 variable "role_arn" {
-	type = string
+  type = string
 }
 
 variable "handler" {
-	type = string
+  type = string
 }
 
 variable "runtime" {
-	type = string
+  type = string
 }
 
 variable "zip_path" {
-	type = string
+  type = string
 }
 
 variable "zip_source_dir" {
-	type = string
+  type = string
 }
 
 variable "timeout" {
-	type    = number
-	default = 120
+  type    = number
+  default = 120
 }

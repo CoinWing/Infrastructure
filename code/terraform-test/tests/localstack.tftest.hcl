@@ -1,7 +1,7 @@
 provider "aws" {
-  access_key = "test"
-  secret_key = "test"
-  region     = "ap-northeast-2"
+  access_key                  = "test"
+  secret_key                  = "test"
+  region                      = "ap-northeast-2"
   s3_use_path_style           = true
   skip_requesting_account_id  = true
   skip_credentials_validation = true
@@ -30,7 +30,7 @@ provider "aws" {
 run "check_lambda_function" {
 
   command = apply
-  variables{
+  variables {
     enable_ec2 = false
   }
 
@@ -40,7 +40,7 @@ run "check_lambda_function" {
   }
 
 }
- 
+
 # run "check_dynamodb_table" {
 #   command = apply
 #   variables{
