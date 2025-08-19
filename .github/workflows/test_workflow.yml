@@ -15,6 +15,9 @@ jobs:
         working-directory: ./code/terraform-test
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Check directory contents
+      run: ls -la
 
     - name: Build and Start LocalStack Container
       run: |
