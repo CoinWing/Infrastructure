@@ -32,7 +32,7 @@ jobs:
       run: |
         terraform init
         terraform validate
-        terraform fmt --recursive --check
+        terraform fmt --recursive --check --diff
         terraform plan
         terraform show
 
