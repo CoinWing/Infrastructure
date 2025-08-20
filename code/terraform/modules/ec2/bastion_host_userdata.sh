@@ -9,7 +9,7 @@ git clone https://github.com/CoinWing/Infrastructure.git
 
 # AWS CLI v2 설치
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
+unzip -o awscliv2.zip
 sudo ./aws/install --update
 rm -rf awscliv2.zip
 
@@ -45,7 +45,7 @@ source /root/.bashrc
 # 실행 전 주의사항 : 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
 # 프로비저닝 스크립트 실행 방법 : eks_provisioning 리전명 클러스터명
 # 예시) eks_provisioning ap-northeast-1 cowing-dev-eks
-cat << 'EOF' >> /usr/local/provisioning_eks_cluster.sh
+cat << 'EOF' > /usr/local/provisioning_eks_cluster.sh
 # 클러스터 인증 정보 업데이트
 aws eks update-kubeconfig --region $1 --name $2
 kubectl create namespace cowing-prod
@@ -67,8 +67,7 @@ eksctl delete iamserviceaccount \
   --cluster $2 \
   --namespace kube-system \
   --name aws-load-balancer-controller \
-
-sleep 45 # 45초 대기
+  --approve && sleep 10
 
 eksctl create iamserviceaccount \
   --region $1 \
@@ -77,13 +76,13 @@ eksctl create iamserviceaccount \
   --name aws-load-balancer-controller \
   --attach-policy-arn arn:aws:iam::593793025731:policy/AWSLoadBalancerControllerIAMPolicy \
   --approve \
-  --override-existing-serviceaccounts
+  --override-existing-serviceaccounts && sleep 10
 
 # IAM OIDC Provider 연동
 eksctl utils associate-iam-oidc-provider \
   --region $1 \
   --cluster $2 \
-  --approve
+  --approve && sleep 10
 
 # cert-manager 설치
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
@@ -91,11 +90,12 @@ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/relea
 # ALB Ingress Controller 설치
 helm repo add eks https://aws.github.io/eks-charts
 helm repo update eks
+helm uninstall aws-load-balancer-controller -n kube-system && sleep 10
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --set clusterName=$2 \
   --set serviceAccount.create=false \
-  --set serviceAccount.name=aws-load-balancer-controller
+  --set serviceAccount.name=aws-load-balancer-controller && sleep 10
 EOF
 
 # TODO
