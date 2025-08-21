@@ -23,7 +23,7 @@ module "sqs" {
   queue_name   = "${local.project_name}-${local.env}-sqs"
 
   fifo                         = true
-  content_based_deduplication = false
+  content_based_deduplication  = false
   visibility_timeout_seconds   = 30
   message_retention_seconds    = 18000
   delay_seconds                = 0
