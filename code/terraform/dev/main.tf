@@ -22,13 +22,13 @@ module "sqs" {
   env          = local.env
   queue_name   = "${local.project_name}-${local.env}-sqs"
 
-  fifo                         = true
+  fifo                        = true
   content_based_deduplication = false
-  visibility_timeout_seconds   = 30
-  message_retention_seconds    = 18000
-  delay_seconds                = 0
-  max_message_size             = 1024
-  receive_wait_time_seconds    = 5
+  visibility_timeout_seconds  = 30
+  message_retention_seconds   = 18000
+  delay_seconds               = 0
+  max_message_size            = 1024
+  receive_wait_time_seconds   = 5
 }
 
 module "iam" {
