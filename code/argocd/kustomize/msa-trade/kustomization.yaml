@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
 - deployment.yaml
 - service.yaml
+- hpa.yaml
 namespace: cowing-prod
 images:
 - name: ghcr.io/coinwing/cowing-msa-trade
