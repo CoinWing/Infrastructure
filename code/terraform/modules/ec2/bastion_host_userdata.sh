@@ -33,6 +33,8 @@ rm -rf /tmp/eksctl
 cat << 'EOF' >> /root/.bashrc
 alias k=kubectl
 alias eks_provisioning=/usr/local/provisioning_eks_cluster.sh
+alias eks_kube_system_provisioning=/usr/local/provisioning_kube_resources_without_argocd.sh
+alias eks_argocd_provisioning=/usr/local/provisioning_argocd.sh
 export PATH=/usr/local/bin:/usr/local/aws-cli/v2/current/bin:$PWD/bin:$PATH
 EOF
 
@@ -47,7 +49,7 @@ source /root/.bashrc
 # 예시) eks_provisioning ap-northeast-1 cowing-dev-eks
 cat << 'EOF' > /usr/local/provisioning_eks_cluster.sh
 # 클러스터 인증 정보 업데이트
-aws eks update-kubeconfig --region $1 --name $2
+aws eks update-kubeconfig --region $1 --name $2 && sleep 10
 kubectl create namespace cowing-prod
 
 # Istio 설치
@@ -62,13 +64,6 @@ kubectl label namespace cowing-prod istio-injection=enabled
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
 # EKS 내부에 IAM Service Account 생성
-eksctl delete iamserviceaccount \
-  --region $1 \
-  --cluster $2 \
-  --namespace kube-system \
-  --name aws-load-balancer-controller \
-  --approve && sleep 10
-
 eksctl create iamserviceaccount \
   --region $1 \
   --cluster $2 \
@@ -96,14 +91,71 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set clusterName=$2 \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller && sleep 10
+
+# ALB Ingress Controller 생성
+sleep 30 && kubectl apply -f /root/Infrastructure/code/kubernetes/istio/alb-ingress-prod.yaml
 EOF
 
-# TODO
-# cert-arn.txt 적용 부분 자동화 필요
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
 # ALB 생성 후 Route53 레코드 업데이트를 위해 Terraform apply 실행 필수
-# Route53 레코드 업데이트 후 NS 레코드 변경되는 경우 있으니, 가비아에서 확인 필수
+# Route53 Zone 재생성 후 NS 레코드 변경되는 경우 있으니, 가비아에서 확인 필수
 chmod +x /usr/local/provisioning_eks_cluster.sh
+
+cat << 'EOF' > /usr/local/provisioning_kube_resources_without_argocd.sh
+kubectl apply -f /root/Infrastructure/code/kubernetes/common-service/mariadb-service-prod.yaml
+
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/api-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/front-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/ws-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/grafana-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/kiali-prod.yaml
+
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/istio-ingressgateway/gateway-prod.yaml
+
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/grafana/dashboard.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/kiali/dashboard.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/prometheus/metric-server.yaml
+EOF
+
+chmod +x /usr/local/provisioning_kube_resources_without_argocd.sh
+
+cat << 'EOF' > /root/apps.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/CoinWing/Infrastructure.git
+    path: code/argocd/applications
+    targetRevision: prod
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cowing-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+EOF
+
+cat << 'EOF' > /usr/local/provisioning_argocd.sh
+kubectl create namespace argocd
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/argocd-prod.yaml
+kubectl label namespace argocd istio-injection=enabled
+curl -L -o argocd.yaml https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+sed -i '/- \/usr\/local\/bin\/argocd-server/a\        - --insecure' argocd.yaml
+kubectl apply -n argocd -f argocd.yaml
+kubectl apply -n argocd -f /root/apps.yaml
+EOF
+
+chmod +x /usr/local/provisioning_argocd.sh
+
 
 # 테스트용 코드
 # kubectl exec -it msa-front-podId -n cowing-prod -- wget -qO- http://localhost:3000/ | head -20
