@@ -17,3 +17,8 @@ output "eks_worker_ng_role_arn" {
   description = "EKS worker node group role ARN"
   value       = aws_iam_role.eks_worker_ng.arn
 }
+
+output "lambda_exec_role_arn" {
+  description = "lambda role ARN"
+  value = aws_iam_role.lambda_exec.arn
+}

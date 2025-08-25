@@ -57,3 +57,8 @@ variable "rds_parameter_group_family" {
   type        = string
   description = "RDS parameter group family"
 }
+
+variable "rds_event_sns" {
+  type = string
+  description = "RDS Event for SNS"
+}
