@@ -47,7 +47,7 @@ source /root/.bashrc
 # 예시) eks_provisioning ap-northeast-1 cowing-dev-eks
 cat << 'EOF' > /usr/local/provisioning_eks_cluster.sh
 # 클러스터 인증 정보 업데이트
-aws eks update-kubeconfig --region $1 --name $2
+aws eks update-kubeconfig --region $1 --name $2 && sleep 10
 kubectl create namespace cowing-prod
 
 # Istio 설치
@@ -62,13 +62,6 @@ kubectl label namespace cowing-prod istio-injection=enabled
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
 # EKS 내부에 IAM Service Account 생성
-eksctl delete iamserviceaccount \
-  --region $1 \
-  --cluster $2 \
-  --namespace kube-system \
-  --name aws-load-balancer-controller \
-  --approve && sleep 10
-
 eksctl create iamserviceaccount \
   --region $1 \
   --cluster $2 \
