@@ -119,6 +119,7 @@ module "rds" {
   rds_security_group_id = module.network.rds_security_group_id
   rds_db_subnet_ids = module.network.rds_db_subnet_ids
   rds_parameter_group_family = var.rds_parameter_group_family
+  rds_event_sns = module.sns.rds_event_sns
 }
 
 module "sqs" {
@@ -128,4 +129,21 @@ module "sqs" {
   env          = var.env
   queue_name   = "Cowing.fifo"
   fifo         = true
+}
+
+module "sns" {
+  source       = "../modules/sns"
+  project_name = var.project_name
+  env          = var.env
+  lambda_function = module.lambda.sns_sub_lambda
+
+}
+
+module "lambda" {
+  source       = "../modules/lambda"
+  project_name = var.project_name
+  env          = var.env
+  lambda_exec_role_arn = module.iam.lambda_exec_role_arn
+  rds_event_sns = module.sns.rds_event_sns
+  webhook = var.webhook
 }
