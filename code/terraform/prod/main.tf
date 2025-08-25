@@ -79,23 +79,30 @@ module "eks" {
   eks_worker_ng_max_size = var.node_group_max_size
 }
 
-module "route53" {
-  source = "../modules/route53"
-
-  project_name = var.project_name
-  env = var.env
-  cluster_name = "${var.project_name}-${var.env}-eks"
-  domain_name = var.domain_name
-}
-
-module "acm" {
-  source = "../modules/acm"
+module "route53_zone" {
+  source = "../modules/route53-zone"
 
   project_name = var.project_name
   env = var.env
   domain_name = var.domain_name
-  cowing_co_kr_zone_id = module.route53.cowing_co_kr_zone_id
 }
+
+# module "route53_records" {
+#   source = "../modules/route53-records"
+
+#   domain_name = var.domain_name
+#   cluster_name = "${var.project_name}-${var.env}-eks"
+#   cowing_co_kr_zone_id = module.route53_zone.cowing_co_kr_zone_id
+# }
+
+# module "acm" {
+#   source = "../modules/acm"
+
+#   project_name = var.project_name
+#   env = var.env
+#   domain_name = var.domain_name
+#   cowing_co_kr_zone_id = module.route53_zone.cowing_co_kr_zone_id
+# }
 
 module "rds" {
   source = "../modules/rds"
