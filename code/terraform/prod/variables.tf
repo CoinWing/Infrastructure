@@ -102,3 +102,8 @@ variable "rds_parameter_group_family" {
   type        = string
   description = "RDS parameter group family"
 }
+
+variable "webhook" {
+  type        = string
+  description = "Discord Webhook URL"
+}
