@@ -91,12 +91,67 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set serviceAccount.name=aws-load-balancer-controller && sleep 10
 EOF
 
-# TODO
-# cert-arn.txt 적용 부분 자동화 필요
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
 # ALB 생성 후 Route53 레코드 업데이트를 위해 Terraform apply 실행 필수
-# Route53 레코드 업데이트 후 NS 레코드 변경되는 경우 있으니, 가비아에서 확인 필수
+# Route53 Zone 재생성 후 NS 레코드 변경되는 경우 있으니, 가비아에서 확인 필수
 chmod +x /usr/local/provisioning_eks_cluster.sh
+
+cat << 'EOF' > /usr/local/provisioning_kube_resources_without_argocd.sh
+k apply -f /root/Infrastructure/code/kubernetes/common-service/mariadb-service-prod.yaml
+
+k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/api-prod.yaml
+k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/front-prod.yaml
+k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/ws-prod.yaml
+k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/grafana-prod.yaml
+k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/kiali-prod.yaml
+
+k apply -f /root/Infrastructure/code/kubernetes/istio/istio-ingressgateway/gateway-prod.yaml
+
+k apply -f /root/Infrastructure/code/kubernetes/istio/grafana/dashboard.yaml
+k apply -f /root/Infrastructure/code/kubernetes/istio/kiali/dashboard.yaml
+k apply -f /root/Infrastructure/code/kubernetes/istio/prometheus/metric-server.yaml
+EOF
+
+chmod +x /usr/local/provisioning_kube_resources_without_argocd.sh
+
+cat << 'EOF' > /root/apps.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: apps
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/CoinWing/Infrastructure.git
+    path: code/argocd/applications
+    targetRevision: prod
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cowing-prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+EOF
+
+
+cat << 'EOF' > /usr/local/provisioning_argocd.sh
+kubectl create namespace argocd
+k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/argocd-prod.yaml
+kubectl label namespace argocd istio-injection=enabled
+curl -L -o argocd.yaml https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+sed -i '/- \/usr\/local\/bin\/argocd-server/a\  - --insecure' argocd.yaml
+k apply -f argocd.yaml
+kubectl apply -n argocd -f /root/apps.yaml
+EOF
+
+chmod +x /usr/local/provisioning_argocd.sh
+
 
 # 테스트용 코드
 # kubectl exec -it msa-front-podId -n cowing-prod -- wget -qO- http://localhost:3000/ | head -20
