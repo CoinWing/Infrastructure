@@ -7,5 +7,4 @@ resources:
 - auth-redis-svc.yaml
 - orderbook-redis.yaml
 - orderbook-redis-svc.yaml
-- pending-queue-redis-pv.yaml
 namespace: cowing-prod
