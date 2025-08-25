@@ -33,6 +33,8 @@ rm -rf /tmp/eksctl
 cat << 'EOF' >> /root/.bashrc
 alias k=kubectl
 alias eks_provisioning=/usr/local/provisioning_eks_cluster.sh
+alias eks_kube_system_provisioning=/usr/local/provisioning_kube_resources_without_argocd.sh
+alias eks_argocd_provisioning=/usr/local/provisioning_argocd.sh
 export PATH=/usr/local/bin:/usr/local/aws-cli/v2/current/bin:$PWD/bin:$PATH
 EOF
 
@@ -142,14 +144,13 @@ spec:
       - CreateNamespace=true
 EOF
 
-
 cat << 'EOF' > /usr/local/provisioning_argocd.sh
 kubectl create namespace argocd
 kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/argocd-prod.yaml
 kubectl label namespace argocd istio-injection=enabled
 curl -L -o argocd.yaml https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-sed -i '/- \/usr\/local\/bin\/argocd-server/a\  - --insecure' argocd.yaml
-k apply -f argocd.yaml
+sed -i '/- \/usr\/local\/bin\/argocd-server/a\        - --insecure' argocd.yaml
+kubectl apply -n argocd -f argocd.yaml
 kubectl apply -n argocd -f /root/apps.yaml
 EOF
 
