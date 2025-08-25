@@ -89,6 +89,9 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set clusterName=$2 \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller && sleep 10
+
+# ALB Ingress Controller 생성
+sleep 30 && kubectl apply -f /root/Infrastructure/code/kubernetes/istio/alb-ingress-prod.yaml
 EOF
 
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
@@ -97,19 +100,19 @@ EOF
 chmod +x /usr/local/provisioning_eks_cluster.sh
 
 cat << 'EOF' > /usr/local/provisioning_kube_resources_without_argocd.sh
-k apply -f /root/Infrastructure/code/kubernetes/common-service/mariadb-service-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/common-service/mariadb-service-prod.yaml
 
-k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/api-prod.yaml
-k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/front-prod.yaml
-k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/ws-prod.yaml
-k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/grafana-prod.yaml
-k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/kiali-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/api-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/front-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/ws-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/grafana-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/kiali-prod.yaml
 
-k apply -f /root/Infrastructure/code/kubernetes/istio/istio-ingressgateway/gateway-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/istio-ingressgateway/gateway-prod.yaml
 
-k apply -f /root/Infrastructure/code/kubernetes/istio/grafana/dashboard.yaml
-k apply -f /root/Infrastructure/code/kubernetes/istio/kiali/dashboard.yaml
-k apply -f /root/Infrastructure/code/kubernetes/istio/prometheus/metric-server.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/grafana/dashboard.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/kiali/dashboard.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/prometheus/metric-server.yaml
 EOF
 
 chmod +x /usr/local/provisioning_kube_resources_without_argocd.sh
@@ -142,7 +145,7 @@ EOF
 
 cat << 'EOF' > /usr/local/provisioning_argocd.sh
 kubectl create namespace argocd
-k apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/argocd-prod.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/istio/virtualservices/argocd-prod.yaml
 kubectl label namespace argocd istio-injection=enabled
 curl -L -o argocd.yaml https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 sed -i '/- \/usr\/local\/bin\/argocd-server/a\  - --insecure' argocd.yaml
