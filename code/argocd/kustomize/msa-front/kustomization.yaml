@@ -3,8 +3,9 @@ kind: Kustomization
 resources:
 - deployment.yaml
 - service.yaml
+- hpa.yaml
 namespace: cowing-prod
 images:
 - name: ghcr.io/coinwing/cowing-msa-front
   newName: ghcr.io/coinwing/cowing-msa-front
-  newTag: 2025.08.02-9957fed
+  newTag: 2025.08.21-e6e1528

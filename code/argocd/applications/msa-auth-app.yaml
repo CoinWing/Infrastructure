@@ -5,6 +5,8 @@ metadata:
   namespace: argocd
   labels:
     app: msa-auth
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
