@@ -87,22 +87,22 @@ module "route53_zone" {
   domain_name = var.domain_name
 }
 
-# module "route53_records" {
-#   source = "../modules/route53-records"
+module "route53_records" {
+  source = "../modules/route53-records"
 
-#   domain_name = var.domain_name
-#   cluster_name = "${var.project_name}-${var.env}-eks"
-#   cowing_co_kr_zone_id = module.route53_zone.cowing_co_kr_zone_id
-# }
+  domain_name = var.domain_name
+  cluster_name = "${var.project_name}-${var.env}-eks"
+  cowing_co_kr_zone_id = module.route53_zone.cowing_co_kr_zone_id
+}
 
-# module "acm" {
-#   source = "../modules/acm"
+module "acm" {
+  source = "../modules/acm"
 
-#   project_name = var.project_name
-#   env = var.env
-#   domain_name = var.domain_name
-#   cowing_co_kr_zone_id = module.route53_zone.cowing_co_kr_zone_id
-# }
+  project_name = var.project_name
+  env = var.env
+  domain_name = var.domain_name
+  cowing_co_kr_zone_id = module.route53_zone.cowing_co_kr_zone_id
+}
 
 module "rds" {
   source = "../modules/rds"
