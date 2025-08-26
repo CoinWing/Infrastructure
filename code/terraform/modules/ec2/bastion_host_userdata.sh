@@ -29,6 +29,14 @@ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/d
 mv /tmp/eksctl /usr/local/bin
 rm -rf /tmp/eksctl
 
+# Ansible 설치
+yum install epel-release -y
+yum install python3 python3-pip -y
+yum install ansible -y
+pip3 install kubernetes boto3 botocore openshift
+ansible-galaxy collection install kubernetes.core
+ansible-galaxy collection install community.aws
+
 # .bashrc 설정
 cat << 'EOF' >> /root/.bashrc
 alias k=kubectl
