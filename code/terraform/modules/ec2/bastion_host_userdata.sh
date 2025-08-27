@@ -60,6 +60,10 @@ cat << 'EOF' > /usr/local/provisioning_eks_cluster.sh
 aws eks update-kubeconfig --region $1 --name $2 && sleep 10
 kubectl create namespace cowing-prod
 
+# External Secrets 설치
+helm repo add external-secrets https://charts.external-secrets.io
+helm install external-secrets external-secrets/external-secrets -n external-secrets-system --create-namespace
+
 # Istio 설치
 kubectl create namespace istio-system
 curl -L https://istio.io/downloadIstio | sh -
@@ -71,7 +75,7 @@ kubectl label namespace cowing-prod istio-injection=enabled
 # Istio Ingress Gateway Serivce -> NodePort 변경
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
-# EKS 내부에 IAM Service Account 생성
+# EKS 내부에 IAM Roles for Service Accounts(IRSAs) 생성
 eksctl delete iamserviceaccount \
   --region $1 \
   --cluster $2 \
@@ -84,6 +88,21 @@ eksctl create iamserviceaccount \
   --namespace kube-system \
   --name aws-load-balancer-controller \
   --attach-policy-arn arn:aws:iam::593793025731:policy/AWSLoadBalancerControllerIAMPolicy \
+  --override-existing-serviceaccounts \
+  --approve && sleep 10
+
+eksctl delete iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace external-secrets-system \
+  --name external-secrets && sleep 10
+
+eksctl create iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace external-secrets-system \
+  --name external-secrets \
+  --attach-policy-arn arn:aws:iam::593793025731:policy/ExternalSecretPolicy \
   --override-existing-serviceaccounts \
   --approve && sleep 10
 
@@ -108,6 +127,9 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 
 # ALB Ingress Controller 생성
 sleep 30 && kubectl apply -f /root/Infrastructure/code/kubernetes/istio/alb-ingress-prod.yaml
+
+# External Secret 생성
+kubectl apply -f /root/Infrastructure/code/kubernetes/secrets/secret-store.yaml
 EOF
 
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
