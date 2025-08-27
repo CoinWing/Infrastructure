@@ -118,6 +118,7 @@ resource "aws_iam_policy" "aws_load_balancer_controller_iam_policy" {
   policy      = file("${path.module}/alb_controller_policy.json")
 }
 
+# Lambda Discord Event Notifier Exec Role
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
 
@@ -129,6 +130,10 @@ resource "aws_iam_role" "lambda_exec" {
       Principal = { Service = "lambda.amazonaws.com" }
     }]
   })
+
+  tags = {
+    Name = "${var.project_name}-${var.env}-lambda-exec-role"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
