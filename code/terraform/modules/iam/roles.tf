@@ -111,13 +111,6 @@ resource "aws_iam_role_policy_attachment" "eks_worker_ng_AmazonEC2ContainerRegis
   role       = aws_iam_role.eks_worker_ng.name
 }
 
-# ALB Ingress Controller IAM Policy
-resource "aws_iam_policy" "aws_load_balancer_controller_iam_policy" {
-  name        = "AWSLoadBalancerControllerIAMPolicy"
-  description = "IAM policy for AWS Load Balancer Controller"
-  policy      = file("${path.module}/alb_controller_policy.json")
-}
-
 # Lambda Discord Event Notifier Exec Role
 resource "aws_iam_role" "lambda_exec" {
   name = "lambda_exec_role"
