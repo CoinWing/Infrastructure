@@ -72,14 +72,20 @@ kubectl label namespace cowing-prod istio-injection=enabled
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
 # EKS 내부에 IAM Service Account 생성
+eksctl delete iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace kube-system \
+  --name aws-load-balancer-controller && sleep 10
+
 eksctl create iamserviceaccount \
   --region $1 \
   --cluster $2 \
   --namespace kube-system \
   --name aws-load-balancer-controller \
   --attach-policy-arn arn:aws:iam::593793025731:policy/AWSLoadBalancerControllerIAMPolicy \
-  --approve \
-  --override-existing-serviceaccounts && sleep 10
+  --override-existing-serviceaccounts \
+  --approve && sleep 10
 
 # IAM OIDC Provider 연동
 eksctl utils associate-iam-oidc-provider \
@@ -159,6 +165,7 @@ kubectl label namespace argocd istio-injection=enabled
 curl -L -o argocd.yaml https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 sed -i '/- \/usr\/local\/bin\/argocd-server/a\        - --insecure' argocd.yaml
 kubectl apply -n argocd -f argocd.yaml
+sleep 60
 kubectl apply -n argocd -f /root/apps.yaml
 EOF
 
