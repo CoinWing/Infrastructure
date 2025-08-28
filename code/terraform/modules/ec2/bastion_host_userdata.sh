@@ -62,6 +62,7 @@ kubectl create namespace cowing-prod
 
 # External Secrets 설치
 helm repo add external-secrets https://charts.external-secrets.io
+helm repo update
 helm uninstall external-secrets -n external-secrets-system && sleep 30
 helm install external-secrets external-secrets/external-secrets -n external-secrets-system --create-namespace
 
