@@ -107,3 +107,8 @@ variable "webhook" {
   type        = string
   description = "Discord Webhook URL"
 }
+
+variable "dockerconfigjson_data" {
+  type        = string
+  description = "Docker config JSON data"
+}

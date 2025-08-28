@@ -147,3 +147,10 @@ module "lambda" {
   rds_event_sns = module.sns.rds_event_sns
   webhook = var.webhook
 }
+
+module "secrets_manager" {
+  source = "../modules/secrets-manager"
+  project_name = var.project_name
+  env = var.env
+  dockerconfigjson_data = var.dockerconfigjson_data
+}
