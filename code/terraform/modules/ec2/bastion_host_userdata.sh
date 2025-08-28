@@ -62,6 +62,7 @@ kubectl create namespace cowing-prod
 
 # External Secrets 설치
 helm repo add external-secrets https://charts.external-secrets.io
+helm uninstall external-secrets -n external-secrets-system && sleep 30
 helm install external-secrets external-secrets/external-secrets -n external-secrets-system --create-namespace
 
 # Istio 설치
@@ -76,12 +77,6 @@ kubectl label namespace cowing-prod istio-injection=enabled
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
 # EKS 내부에 IAM Roles for Service Accounts(IRSAs) 생성
-eksctl delete iamserviceaccount \
-  --region $1 \
-  --cluster $2 \
-  --namespace kube-system \
-  --name aws-load-balancer-controller && sleep 10
-
 eksctl create iamserviceaccount \
   --region $1 \
   --cluster $2 \
@@ -89,13 +84,7 @@ eksctl create iamserviceaccount \
   --name aws-load-balancer-controller \
   --attach-policy-arn arn:aws:iam::593793025731:policy/AWSLoadBalancerControllerIAMPolicy \
   --override-existing-serviceaccounts \
-  --approve && sleep 10
-
-eksctl delete iamserviceaccount \
-  --region $1 \
-  --cluster $2 \
-  --namespace external-secrets-system \
-  --name external-secrets && sleep 10
+  --approve && sleep 30
 
 eksctl create iamserviceaccount \
   --region $1 \
@@ -104,7 +93,7 @@ eksctl create iamserviceaccount \
   --name external-secrets \
   --attach-policy-arn arn:aws:iam::593793025731:policy/ExternalSecretPolicy \
   --override-existing-serviceaccounts \
-  --approve && sleep 10
+  --approve && sleep 30
 
 # IAM OIDC Provider 연동
 eksctl utils associate-iam-oidc-provider \
@@ -118,7 +107,7 @@ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/relea
 # ALB Ingress Controller 설치
 helm repo add eks https://aws.github.io/eks-charts
 helm repo update eks
-helm uninstall aws-load-balancer-controller -n kube-system && sleep 10
+helm uninstall aws-load-balancer-controller -n kube-system && sleep 30
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --set clusterName=$2 \
@@ -187,7 +176,7 @@ kubectl label namespace argocd istio-injection=enabled
 curl -L -o argocd.yaml https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 sed -i '/- \/usr\/local\/bin\/argocd-server/a\        - --insecure' argocd.yaml
 kubectl apply -n argocd -f argocd.yaml
-sleep 60
+sleep 100
 kubectl apply -n argocd -f /root/apps.yaml
 EOF
 
