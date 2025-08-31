@@ -81,6 +81,7 @@ variable "rds_username" {
 variable "rds_password" {
   type        = string
   description = "RDS password"
+  sensitive   = true
 }
 
 variable "rds_engine" {
@@ -106,9 +107,61 @@ variable "rds_parameter_group_family" {
 variable "webhook" {
   type        = string
   description = "Discord Webhook URL"
+  sensitive   = true
 }
 
-variable "dockerconfigjson_data" {
+variable "github_username" {
   type        = string
-  description = "Docker config JSON data"
+  description = "GitHub username"
+}
+
+variable "github_password" {
+  type        = string
+  description = "GitHub password"
+  sensitive   = true
+}
+
+variable "github_email" {
+  type        = string
+  description = "GitHub email"
+}
+
+variable "jwt_secret" {
+  type        = string
+  description = "JWT secret"
+  sensitive   = true
+}
+
+variable "redis_password" {
+  type        = string
+  description = "Redis password"
+  sensitive   = true
+}
+
+variable "queue_name" {
+  type        = string
+  description = "Queue name"
+}
+
+variable "pd_redis_password" {
+  type        = string
+  description = "PD Redis password"
+  sensitive   = true
+}
+
+variable "access_key" {
+  type        = string
+  description = "Access key"
+  sensitive   = true
+}
+
+variable "secret_key" {
+  type        = string
+  description = "Secret key"
+  sensitive   = true
+}
+
+variable "sqs_uri" {
+  type        = string
+  description = "SQS URI"
 }
