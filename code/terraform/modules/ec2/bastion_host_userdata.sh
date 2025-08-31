@@ -78,6 +78,12 @@ kubectl label namespace cowing-prod istio-injection=enabled
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
 # EKS 내부에 IAM Roles for Service Accounts(IRSAs) 생성
+eksctl delete iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace kube-system \
+  --name aws-load-balancer-controller && sleep 30
+
 eksctl create iamserviceaccount \
   --region $1 \
   --cluster $2 \
@@ -86,6 +92,12 @@ eksctl create iamserviceaccount \
   --attach-policy-arn arn:aws:iam::593793025731:policy/AWSLoadBalancerControllerIAMPolicy \
   --override-existing-serviceaccounts \
   --approve && sleep 30
+
+eksctl delete iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace kube-system \
+  --name external-secrets && sleep 30
 
 eksctl create iamserviceaccount \
   --region $1 \
