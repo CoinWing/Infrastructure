@@ -59,15 +59,10 @@ cat << 'EOF' > /usr/local/provisioning_eks_cluster.sh
 # 클러스터 인증 정보 업데이트
 aws eks update-kubeconfig --region $1 --name $2 && sleep 10
 kubectl create namespace cowing-prod
-
-# External Secrets 설치
-helm repo add external-secrets https://charts.external-secrets.io
-helm repo update
-helm uninstall external-secrets -n external-secrets-system && sleep 30
-helm install external-secrets external-secrets/external-secrets -n external-secrets-system --create-namespace
+kubectl create namespace external-secrets-system
+kubectl create namespace istio-system
 
 # Istio 설치
-kubectl create namespace istio-system
 curl -L https://istio.io/downloadIstio | sh -
 cd istio-*
 export PATH=$PWD/bin:$PATH
@@ -76,6 +71,12 @@ kubectl label namespace cowing-prod istio-injection=enabled
 
 # Istio Ingress Gateway Serivce -> NodePort 변경
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
+
+# IAM OIDC Provider 연동
+eksctl utils associate-iam-oidc-provider \
+  --region $1 \
+  --cluster $2 \
+  --approve && sleep 10
 
 # EKS 내부에 IAM Roles for Service Accounts(IRSAs) 생성
 eksctl delete iamserviceaccount \
@@ -108,12 +109,6 @@ eksctl create iamserviceaccount \
   --override-existing-serviceaccounts \
   --approve && sleep 30
 
-# IAM OIDC Provider 연동
-eksctl utils associate-iam-oidc-provider \
-  --region $1 \
-  --cluster $2 \
-  --approve && sleep 10
-
 # cert-manager 설치
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
@@ -130,8 +125,17 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 # ALB Ingress Controller 생성
 sleep 30 && kubectl apply -f /root/Infrastructure/code/kubernetes/istio/alb-ingress-prod.yaml
 
+# External Secrets 설치
+helm repo add external-secrets https://charts.external-secrets.io
+helm repo update
+helm uninstall external-secrets -n external-secrets-system && sleep 30
+helm install external-secrets external-secrets/external-secrets \
+  -n external-secrets-system \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=external-secrets
+
 # External Secret 생성
-kubectl apply -f /root/Infrastructure/code/kubernetes/secrets/secret-store.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/cluster-secret-store.yaml
 EOF
 
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
