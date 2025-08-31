@@ -135,7 +135,11 @@ helm install external-secrets external-secrets/external-secrets \
   --set serviceAccount.name=external-secrets
 
 # External Secret 생성
-kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/cluster-secret-store.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/cluster-secret-store.yaml && sleep 60
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/redis-external-secret.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/mariadb-external-secret.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/sqs-config-external-secret.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/jwt-external-secret.yaml
 EOF
 
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
