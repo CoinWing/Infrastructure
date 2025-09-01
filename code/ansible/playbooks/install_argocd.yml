@@ -1,0 +1,39 @@
+- name: Install ArgoCD on EKS Cluster
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  
+  vars:
+    argocd_namespace: "argocd"
+    argocd_version: "v3.1.1"
+    cluster_name: "cowing-prod-eks"
+    
+  tasks:
+    - name: Create ArgoCD namespace
+      kubernetes.core.k8s:
+        name: "{{ argocd_namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+        
+    - name: Install ArgoCD using official manifest
+      kubernetes.core.k8s:
+        state: present
+        src: "https://raw.githubusercontent.com/argoproj/argo-cd/{{ argocd_version }}/manifests/install.yaml"
+        namespace: "{{ argocd_namespace }}"
+        wait: true
+        wait_condition:
+          type: Ready
+          status: "True"
+        wait_timeout: 300
+        
+    - name: Wait for ArgoCD server pod to be ready
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: argocd-server
+        namespace: "{{ argocd_namespace }}"
+        wait_condition:
+          type: Available
+          status: "True"
+        wait_timeout: 300
