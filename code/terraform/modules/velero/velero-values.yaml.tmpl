@@ -1,0 +1,32 @@
+namespace: 
+  name: ${namespace}
+  labels: {}
+
+serviceAccount:
+  server:
+      create: true
+      name: velero
+      annotations:
+        eks.amazonaws.com/role-arn: ${velero_role_arn}
+
+image:
+  repository: velero/velero
+  tag: "${velero_image_version}"
+
+configuration:
+  backupStorageLocation:
+    - name: default
+      provider: aws
+      bucket: ${bucket_name}
+      default: true
+      config:
+        region: ${region}
+    
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: ${region}
+
+credentials:
+  useSecret: false
