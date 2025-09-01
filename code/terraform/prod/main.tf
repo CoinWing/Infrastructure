@@ -147,3 +147,22 @@ module "lambda" {
   rds_event_sns = module.sns.rds_event_sns
   webhook = var.webhook
 }
+
+module "velero" {
+  source = "../modules/velero"
+
+  project_name                      = "${var.project_name}"
+  cluster_ca_data                   = module.eks.cluster_certificate_authority_data
+  cluster_dualstack_oidc_issuer_url = module.eks.cluster_dualstack_oidc_issuer_url
+  oidc_provider_arn                 = module.eks.oidc_provider_arn
+  region                            = var.region
+  bucket_name                       = "${var.project_name}-velero-backup"
+
+  namespace            = "velero"
+  helm_chart_version   = "7.2.1"
+  velero_image_version = "v1.14.0"
+
+  depends_on = [
+    module.eks
+  ]
+}
