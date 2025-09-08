@@ -148,6 +148,31 @@ module "lambda" {
   webhook = var.webhook
 }
 
+module "secrets_manager" {
+  source = "../modules/secrets-manager"
+  project_name = var.project_name
+  env = var.env  
+  github_username = var.github_username
+  github_password = var.github_password
+  github_email = var.github_email
+  jwt_secret = var.jwt_secret
+  mariadb_username = var.rds_username
+  mariadb_password = var.rds_password
+  redis_password = var.redis_password
+  queue_name = var.queue_name
+  pd_redis_password = var.pd_redis_password
+  access_key = var.access_key
+  secret_key = var.secret_key
+  sqs_uri = var.sqs_uri
+}
+
+module "backup" {
+  source       = "../modules/backup"
+  project_name = var.project_name
+  env          = var.env
+  rule_weekly_enabled = true
+}
+
 module "velero" {
   source = "../modules/velero"
 

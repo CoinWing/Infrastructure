@@ -12,4 +12,8 @@ resource "aws_lambda_function" "sns_sub_lambda" {
       webhook = var.webhook
     }
   }
+
+  tags = {
+    Name = "${var.project_name}-${var.env}-lambda-rds-event-notifier"
+  }
 }

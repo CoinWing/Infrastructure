@@ -29,6 +29,14 @@ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/d
 mv /tmp/eksctl /usr/local/bin
 rm -rf /tmp/eksctl
 
+# Ansible 설치
+yum install epel-release -y
+yum install python3 python3-pip -y
+yum install ansible -y
+pip3 install kubernetes boto3 botocore openshift
+ansible-galaxy collection install kubernetes.core
+ansible-galaxy collection install community.aws
+
 # .bashrc 설정
 cat << 'EOF' >> /root/.bashrc
 alias k=kubectl
@@ -51,9 +59,10 @@ cat << 'EOF' > /usr/local/provisioning_eks_cluster.sh
 # 클러스터 인증 정보 업데이트
 aws eks update-kubeconfig --region $1 --name $2 && sleep 10
 kubectl create namespace cowing-prod
+kubectl create namespace external-secrets-system
+kubectl create namespace istio-system
 
 # Istio 설치
-kubectl create namespace istio-system
 curl -L https://istio.io/downloadIstio | sh -
 cd istio-*
 export PATH=$PWD/bin:$PATH
@@ -63,21 +72,42 @@ kubectl label namespace cowing-prod istio-injection=enabled
 # Istio Ingress Gateway Serivce -> NodePort 변경
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec":{"type":"NodePort"}}'
 
-# EKS 내부에 IAM Service Account 생성
+# IAM OIDC Provider 연동
+eksctl utils associate-iam-oidc-provider \
+  --region $1 \
+  --cluster $2 \
+  --approve && sleep 10
+
+# EKS 내부에 IAM Roles for Service Accounts(IRSAs) 생성
+eksctl delete iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace kube-system \
+  --name aws-load-balancer-controller && sleep 30
+
 eksctl create iamserviceaccount \
   --region $1 \
   --cluster $2 \
   --namespace kube-system \
   --name aws-load-balancer-controller \
   --attach-policy-arn arn:aws:iam::593793025731:policy/AWSLoadBalancerControllerIAMPolicy \
-  --approve \
-  --override-existing-serviceaccounts && sleep 10
+  --override-existing-serviceaccounts \
+  --approve && sleep 30
 
-# IAM OIDC Provider 연동
-eksctl utils associate-iam-oidc-provider \
+eksctl delete iamserviceaccount \
   --region $1 \
   --cluster $2 \
-  --approve && sleep 10
+  --namespace kube-system \
+  --name external-secrets && sleep 30
+
+eksctl create iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace external-secrets-system \
+  --name external-secrets \
+  --attach-policy-arn arn:aws:iam::593793025731:policy/ExternalSecretPolicy \
+  --override-existing-serviceaccounts \
+  --approve && sleep 30
 
 # cert-manager 설치
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
@@ -85,7 +115,7 @@ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/relea
 # ALB Ingress Controller 설치
 helm repo add eks https://aws.github.io/eks-charts
 helm repo update eks
-helm uninstall aws-load-balancer-controller -n kube-system && sleep 10
+helm uninstall aws-load-balancer-controller -n kube-system && sleep 30
 helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system \
   --set clusterName=$2 \
@@ -94,6 +124,22 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 
 # ALB Ingress Controller 생성
 sleep 30 && kubectl apply -f /root/Infrastructure/code/kubernetes/istio/alb-ingress-prod.yaml
+
+# External Secrets 설치
+helm repo add external-secrets https://charts.external-secrets.io
+helm repo update
+helm uninstall external-secrets -n external-secrets-system && sleep 30
+helm install external-secrets external-secrets/external-secrets \
+  -n external-secrets-system \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=external-secrets
+
+# External Secret 생성
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/cluster-secret-store.yaml && sleep 60
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/redis-external-secret.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/mariadb-external-secret.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/sqs-config-external-secret.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/jwt-external-secret.yaml
 EOF
 
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
@@ -115,6 +161,7 @@ kubectl apply -f /root/Infrastructure/code/kubernetes/istio/istio-ingressgateway
 kubectl apply -f /root/Infrastructure/code/kubernetes/istio/grafana/dashboard.yaml
 kubectl apply -f /root/Infrastructure/code/kubernetes/istio/kiali/dashboard.yaml
 kubectl apply -f /root/Infrastructure/code/kubernetes/istio/prometheus/metric-server.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/persistent-volume/pending-queue-redis-pv.yaml
 EOF
 
 chmod +x /usr/local/provisioning_kube_resources_without_argocd.sh
@@ -151,10 +198,12 @@ kubectl label namespace argocd istio-injection=enabled
 curl -L -o argocd.yaml https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 sed -i '/- \/usr\/local\/bin\/argocd-server/a\        - --insecure' argocd.yaml
 kubectl apply -n argocd -f argocd.yaml
+sleep 100
 kubectl apply -n argocd -f /root/apps.yaml
 EOF
 
 chmod +x /usr/local/provisioning_argocd.sh
+
 
 
 # 테스트용 코드
