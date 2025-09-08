@@ -178,14 +178,15 @@ module "velero" {
 
   project_name                      = "${var.project_name}"
   cluster_ca_data                   = module.eks.cluster_certificate_authority_data
-  cluster_dualstack_oidc_issuer_url = module.eks.cluster_dualstack_oidc_issuer_url
+  cluster_oidc_issuer_url           = module.eks.cluster_oidc_issuer_url
   oidc_provider_arn                 = module.eks.oidc_provider_arn
   region                            = var.region
   bucket_name                       = "${var.project_name}-velero-backup"
 
-  namespace            = "velero"
-  helm_chart_version   = "7.2.1"
-  velero_image_version = "v1.14.0"
+  namespace             = "velero"
+  helm_chart_version    = "7.2.1"
+  velero_image_version  = "v1.16.2"
+  velero_plugin_version = "v1.12.2"
 
   depends_on = [
     module.eks
