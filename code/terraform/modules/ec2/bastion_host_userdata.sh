@@ -161,6 +161,7 @@ kubectl apply -f /root/Infrastructure/code/kubernetes/istio/istio-ingressgateway
 kubectl apply -f /root/Infrastructure/code/kubernetes/istio/grafana/dashboard.yaml
 kubectl apply -f /root/Infrastructure/code/kubernetes/istio/kiali/dashboard.yaml
 kubectl apply -f /root/Infrastructure/code/kubernetes/istio/prometheus/metric-server.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/persistent-volume/pending-queue-redis-pv.yaml
 EOF
 
 chmod +x /usr/local/provisioning_kube_resources_without_argocd.sh
@@ -202,6 +203,7 @@ kubectl apply -n argocd -f /root/apps.yaml
 EOF
 
 chmod +x /usr/local/provisioning_argocd.sh
+
 
 
 # 테스트용 코드
