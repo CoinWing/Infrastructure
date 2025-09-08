@@ -165,3 +165,10 @@ module "secrets_manager" {
   secret_key = var.secret_key
   sqs_uri = var.sqs_uri
 }
+
+module "backup" {
+  source       = "../modules/backup"
+  project_name = var.project_name
+  env          = var.env
+  rule_weekly_enabled = true
+}
