@@ -4,12 +4,13 @@ namespace:
 
 serviceAccount:
   server:
-      create: true
-      name: velero
-      annotations:
-        eks.amazonaws.com/role-arn: ${velero_role_arn}
+    create: true
+    name: velero-server
+    annotations:
+      eks.amazonaws.com/sts-regional-endpoints: "true"
+      eks.amazonaws.com/role-arn: ${velero_role_arn}
 
-image:
+image: 
   repository: velero/velero
   tag: "${velero_image_version}"
 
@@ -30,3 +31,15 @@ configuration:
 
 credentials:
   useSecret: false
+
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:${velero_plugin_version}
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+
+
+plugins:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:${velero_plugin_version}
