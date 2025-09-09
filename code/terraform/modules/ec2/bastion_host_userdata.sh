@@ -140,6 +140,7 @@ kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/redis-ext
 kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/mariadb-external-secret.yaml
 kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/sqs-config-external-secret.yaml
 kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/jwt-external-secret.yaml
+kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/ghcr-external-secret.yaml
 EOF
 
 # 클러스터 삭제 후 삭제되지 않은 ALB 리소스 수동 삭제 필수
