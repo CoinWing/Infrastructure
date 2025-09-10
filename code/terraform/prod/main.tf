@@ -243,3 +243,32 @@ module "backup" {
   env          = var.env
   rule_weekly_enabled = true
 }
+
+module "compliance" {
+  source = "../modules/compliance"
+
+  project_name = var.project_name
+  env          = var.env
+  region       = var.region
+
+  # Compliance Standards
+  enable_cis_standard  = true
+  enable_pci_standard  = false
+  enable_nist_standard = true
+
+  # Logging
+  log_retention_days = 30
+
+  # Notifications
+  compliance_email = var.compliance_email
+
+  # CloudTrail Settings
+  cloudtrail_include_global_service_events = true
+  cloudtrail_is_multi_region_trail         = true
+
+  # CloudWatch Alarms
+  enable_cloudwatch_alarms = true
+
+  # Dashboard
+  enable_compliance_dashboard = true
+}

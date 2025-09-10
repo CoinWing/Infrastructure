@@ -165,3 +165,97 @@ variable "sqs_uri" {
   type        = string
   description = "SQS URI"
 }
+
+variable "compliance_email" {
+  type        = string
+  description = "Email address for compliance alerts"
+  default     = null
+}
+
+variable "compliance_lambda_arn" {
+  type        = string
+  description = "Lambda function ARN for compliance alerts"
+  default     = null
+}
+
+variable "custom_config_rules" {
+  type = list(object({
+    name        = string
+    description = string
+    source = object({
+      owner             = string
+      source_identifier = string
+    })
+    input_parameters = optional(string)
+  }))
+  description = "Custom AWS Config rules"
+  default     = []
+}
+
+variable "cloudtrail_include_global_service_events" {
+  type        = bool
+  description = "Include global service events in CloudTrail"
+  default     = true
+}
+
+variable "cloudtrail_is_multi_region_trail" {
+  type        = bool
+  description = "Enable multi-region CloudTrail"
+  default     = true
+}
+
+variable "cloudtrail_event_selectors" {
+  type = list(object({
+    read_write_type           = string
+    include_management_events = bool
+    data_resources = optional(list(object({
+      type   = string
+      values = list(string)
+    })))
+  }))
+  description = "CloudTrail event selectors"
+  default = [
+    {
+      read_write_type           = "All"
+      include_management_events = true
+      data_resources = [
+        {
+          type   = "AWS::S3::Object"
+          values = ["arn:aws:s3:::"]
+        },
+        {
+          type   = "AWS::DynamoDB::Table"
+          values = ["arn:aws:dynamodb:::"]
+        },
+        {
+          type   = "AWS::Lambda::Function"
+          values = ["arn:aws:lambda:::"]
+        }
+      ]
+    }
+  ]
+}
+
+variable "enable_cloudwatch_alarms" {
+  type        = bool
+  description = "Enable CloudWatch alarms for compliance"
+  default     = true
+}
+
+variable "alarm_threshold_config_compliance" {
+  type        = number
+  description = "Threshold for config compliance alarm"
+  default     = 0
+}
+
+variable "alarm_threshold_security_hub_findings" {
+  type        = number
+  description = "Threshold for security hub findings alarm"
+  default     = 0
+}
+
+variable "enable_compliance_dashboard" {
+  type        = bool
+  description = "Enable CloudWatch compliance dashboard"
+  default     = true
+}
