@@ -134,6 +134,8 @@ helm install external-secrets external-secrets/external-secrets \
   --set serviceAccount.create=false \
   --set serviceAccount.name=external-secrets
 
+sleep 150
+
 # External Secret 생성
 kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/cluster-secret-store.yaml && sleep 60
 kubectl apply -f /root/Infrastructure/code/kubernetes/external-secrets/redis-external-secret.yaml
