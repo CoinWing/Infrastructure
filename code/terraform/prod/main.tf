@@ -166,6 +166,39 @@ module "secrets_manager" {
   sqs_uri = var.sqs_uri
 }
 
+module "waf" {
+  source = "../modules/waf"
+
+  project_name = var.project_name
+  env          = var.env
+  scope        = "REGIONAL"  # For ALB, use "CLOUDFRONT" for CloudFront
+
+  # Enable AWS Managed Rules
+  enable_core_rule_set      = true
+  enable_known_bad_inputs   = true
+  enable_sql_injection      = true
+  enable_linux_os          = true
+
+  # Rate limiting
+  enable_rate_limiting = true
+  rate_limit          = 2000
+
+  # Geo blocking (optional)
+  blocked_countries = []
+
+  # IP blocking (optional)
+  create_ip_set         = true
+  blocked_ip_addresses  = []
+
+  # Logging
+  enable_logging      = true
+  log_retention_days  = 14
+
+  # Monitoring
+  cloudwatch_metrics_enabled = true
+  sampled_requests_enabled   = true
+}
+
 module "cloudfront" {
   source = "../modules/cloudfront"
 
