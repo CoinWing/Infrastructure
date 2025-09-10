@@ -97,7 +97,7 @@ eksctl create iamserviceaccount \
 eksctl delete iamserviceaccount \
   --region $1 \
   --cluster $2 \
-  --namespace kube-system \
+  --namespace external-secrets-system \
   --name external-secrets && sleep 30
 
 eksctl create iamserviceaccount \
