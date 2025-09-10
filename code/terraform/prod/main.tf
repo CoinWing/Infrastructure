@@ -166,6 +166,44 @@ module "secrets_manager" {
   sqs_uri = var.sqs_uri
 }
 
+module "cloudfront" {
+  source = "../modules/cloudfront"
+
+  project_name    = var.project_name
+  env             = var.env
+  domain_aliases  = [var.domain_name, "www.${var.domain_name}"]
+  certificate_arn = module.acm.certificate_arn
+  
+  # ALB domain for API requests (if you have ALB)
+  alb_domain_name = "api.${var.domain_name}"
+  
+  # Route53 configuration
+  route53_zone_id        = module.route53_zone.cowing_co_kr_zone_id
+  create_route53_record  = true
+  
+  # Cache settings
+  cache_min_ttl     = 0
+  cache_default_ttl = 3600
+  cache_max_ttl     = 86400
+  
+  # Price class (adjust based on your needs)
+  price_class = "PriceClass_100"  # US, Canada, Europe
+  
+  # Custom error responses for SPA
+  custom_error_responses = [
+    {
+      error_code         = 404
+      response_code      = 200
+      response_page_path = "/index.html"
+    },
+    {
+      error_code         = 403
+      response_code      = 200
+      response_page_path = "/index.html"
+    }
+  ]
+}
+
 module "backup" {
   source       = "../modules/backup"
   project_name = var.project_name
