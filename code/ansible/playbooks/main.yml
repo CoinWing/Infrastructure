@@ -1,0 +1,33 @@
+---
+- name: Complete EKS Cluster Provisioning via Bastion Host
+  hosts: localhost
+  gather_facts: false
+  connection: local
+  
+  tasks:
+    - name: Check if bastion host is accessible
+      community.aws.ec2_instance_info:
+        filters:
+          "tag:Name": "cowing-prod-bastion-host"
+          "instance-state-name": "running"
+        region: "ap-northeast-2"
+      register: bastion_info
+      
+    - name: Fail if bastion host is not found
+      fail:
+        msg: "Bastion host not found or not running"
+      when: bastion_info.instances | length == 0
+      
+    - name: Display bastion host information
+      debug:
+        msg: "Found bastion host: {{ bastion_info.instances[0].instance_id }}"
+        
+    - name: Include EKS cluster provisioning
+      include_tasks: provision_eks_cluster.yml
+      
+    - name: Wait for cluster to be ready
+      pause:
+        seconds: 60
+        
+    - name: Include Kubernetes resources provisioning
+      include_tasks: provision_kube_resources.yml
