@@ -52,10 +52,10 @@ spec:
               value: "172800000"
           resources:
             requests:
-              cpu: "0.5"
+              cpu: "0.6"
               memory: "512Mi"
             limits:
-              cpu: "0.5"
+              cpu: "0.6"
               memory: "700Mi"
           ports:
             - containerPort: 8080
