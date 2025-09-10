@@ -8,4 +8,4 @@ namespace: cowing-prod
 images:
 - name: ghcr.io/coinwing/cowing-msa-front
   newName: ghcr.io/coinwing/cowing-msa-front
-  newTag: 2025.09.10-717144e
+  newTag: 2025.09.10-4eb979d
