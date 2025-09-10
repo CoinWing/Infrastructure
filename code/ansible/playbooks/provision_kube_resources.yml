@@ -1,0 +1,75 @@
+---
+- name: Provision Kubernetes Resources (without ArgoCD)
+  hosts: bastion
+  gather_facts: true
+  become: yes
+  
+  vars:
+    region: "ap-northeast-2"
+    cluster_name: "cowing-prod-eks"
+    
+  pre_tasks:
+    - name: Update kubeconfig for EKS cluster
+      shell: |
+        aws eks update-kubeconfig --region {{ region }} --name {{ cluster_name }}
+      register: kubeconfig_result
+      
+    - name: Wait for kubeconfig to be ready
+      pause:
+        seconds: 10
+
+  tasks:
+    - name: Apply MariaDB Service
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/common-service/mariadb-service-prod.yaml"
+
+    - name: Apply API Virtual Service
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/virtualservices/api-prod.yaml"
+
+    - name: Apply Front Virtual Service
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/virtualservices/front-prod.yaml"
+
+    - name: Apply WebSocket Virtual Service
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/virtualservices/ws-prod.yaml"
+
+    - name: Apply Grafana Virtual Service
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/virtualservices/grafana-prod.yaml"
+
+    - name: Apply Kiali Virtual Service
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/virtualservices/kiali-prod.yaml"
+
+    - name: Apply Gateway
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/istio-ingressgateway/gateway-prod.yaml"
+
+    - name: Apply Grafana Dashboard
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/grafana/dashboard.yaml"
+
+    - name: Apply Kiali Dashboard
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/kiali/dashboard.yaml"
+
+    - name: Apply Prometheus Metric Server
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/prometheus/metric-server.yaml"
+
+    - name: Apply Redis Persistent Volume
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/persistent-volume/pending-queue-redis-pv.yaml"

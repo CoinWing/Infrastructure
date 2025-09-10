@@ -1,0 +1,289 @@
+---
+- name: Provision EKS Cluster and Required Components
+  hosts: bastion
+  gather_facts: true
+  become: yes
+  
+  vars:
+    region: "ap-northeast-2"
+    cluster_name: "cowing-prod-eks"
+    account_id: "593793025731"
+    istio_version: "1.20.0"
+    kubectl_version: "v1.32.3"
+    cert_manager_version: "v1.5.4"
+    
+  pre_tasks:
+    - name: Check if required tools are installed
+      command: "{{ item }}"
+      args:
+        creates: "{{ item }}"
+      failed_when: false
+      register: tool_check
+      loop:
+        - kubectl
+        - helm
+        - aws
+        - eksctl
+      when: tool_check.rc != 0
+      
+    - name: Fail if required tools are missing
+      fail:
+        msg: "Required tools are not installed on bastion host"
+      when: tool_check.rc != 0
+      
+  tasks:
+    - name: Update kubeconfig for EKS cluster
+      shell: |
+        aws eks update-kubeconfig --region {{ region }} --name {{ cluster_name }}
+      register: kubeconfig_result
+      
+    - name: Wait for kubeconfig to be ready
+      pause:
+        seconds: 10
+
+    - name: Create cowing-prod namespace
+      kubernetes.core.k8s:
+        name: "cowing-prod"
+        api_version: v1
+        kind: Namespace
+        state: present
+        
+    - name: Create external-secrets-system namespace
+      kubernetes.core.k8s:
+        name: "external-secrets-system"
+        api_version: v1
+        kind: Namespace
+        state: present
+        
+    - name: Create istio-system namespace
+      kubernetes.core.k8s:
+        name: "istio-system"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Download and install Istio
+      block:
+        - name: Download Istio
+          get_url:
+            url: "https://istio.io/downloadIstio"
+            dest: "/tmp/downloadIstio"
+            mode: '0755'
+            
+        - name: Execute Istio download script
+          command: "bash /tmp/downloadIstio"
+          args:
+            chdir: /tmp
+            
+        - name: Find Istio directory
+          find:
+            paths: /tmp
+            patterns: "istio-*"
+            file_type: directory
+          register: istio_dir
+          
+        - name: Set Istio path
+          set_fact:
+            istio_path: "{{ istio_dir.files[0].path }}"
+            
+        - name: Install Istio
+          command: "{{ istio_path }}/bin/istioctl install --set profile=default -y"
+          environment:
+            PATH: "{{ istio_path }}/bin:{{ ansible_env.PATH }}"
+            
+        - name: Enable Istio injection for cowing-prod namespace
+          kubernetes.core.k8s:
+            definition:
+              metadata:
+                name: "cowing-prod"
+                labels:
+                  istio-injection: "enabled"
+            api_version: v1
+            kind: Namespace
+            state: present
+            
+        - name: Patch Istio Ingress Gateway Service to NodePort
+          kubernetes.core.k8s:
+            definition:
+              metadata:
+                name: "istio-ingressgateway"
+                namespace: "istio-system"
+              spec:
+                type: "NodePort"
+            api_version: v1
+            kind: Service
+            state: present
+            merge_type: strategic-merge
+
+    - name: Associate IAM OIDC Provider
+      shell: |
+        eksctl utils associate-iam-oidc-provider \
+          --region {{ region }} \
+          --cluster {{ cluster_name }} \
+          --approve
+      register: oidc_result
+      
+    - name: Wait for OIDC provider association
+      pause:
+        seconds: 10
+
+    - name: Delete existing AWS Load Balancer Controller IRSA
+      shell: |
+        eksctl delete iamserviceaccount \
+          --region {{ region }} \
+          --cluster {{ cluster_name }} \
+          --namespace kube-system \
+          --name aws-load-balancer-controller || true
+      register: delete_alb_irsa
+      ignore_errors: true
+      
+    - name: Wait after deletion
+      pause:
+        seconds: 30
+
+    - name: Create AWS Load Balancer Controller IRSA
+      shell: |
+        eksctl create iamserviceaccount \
+          --region {{ region }} \
+          --cluster {{ cluster_name }} \
+          --namespace kube-system \
+          --name aws-load-balancer-controller \
+          --attach-policy-arn arn:aws:iam::{{ account_id }}:policy/AWSLoadBalancerControllerIAMPolicy \
+          --override-existing-serviceaccounts \
+          --approve
+      register: alb_irsa_result
+      
+    - name: Wait for ALB IRSA creation
+      pause:
+        seconds: 30
+
+    - name: Delete existing External Secrets IRSA
+      shell: |
+        eksctl delete iamserviceaccount \
+          --region {{ region }} \
+          --cluster {{ cluster_name }} \
+          --namespace external-secrets-system \
+          --name external-secrets || true
+      register: delete_external_secrets_irsa
+      ignore_errors: true
+      
+    - name: Wait after deletion
+      pause:
+        seconds: 30
+
+    - name: Create External Secrets IRSA
+      shell: |
+        eksctl create iamserviceaccount \
+          --region {{ region }} \
+          --cluster {{ cluster_name }} \
+          --namespace external-secrets-system \
+          --name external-secrets \
+          --attach-policy-arn arn:aws:iam::{{ account_id }}:policy/ExternalSecretPolicy \
+          --override-existing-serviceaccounts \
+          --approve
+      register: external_secrets_irsa_result
+      
+    - name: Wait for External Secrets IRSA creation
+      pause:
+        seconds: 30
+
+    - name: Install cert-manager
+      shell: |
+        kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/{{ cert_manager_version }}/cert-manager.yaml
+      register: cert_manager_result
+
+    - name: Add EKS Helm repository
+      shell: |
+        helm repo add eks https://aws.github.io/eks-charts
+        helm repo update eks
+      register: helm_repo_result
+
+    - name: Uninstall existing AWS Load Balancer Controller
+      shell: |
+        helm uninstall aws-load-balancer-controller -n kube-system || true
+      register: uninstall_alb
+      ignore_errors: true
+      
+    - name: Wait after uninstall
+      pause:
+        seconds: 30
+
+    - name: Install AWS Load Balancer Controller
+      shell: |
+        helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+          -n kube-system \
+          --set clusterName={{ cluster_name }} \
+          --set serviceAccount.create=false \
+          --set serviceAccount.name=aws-load-balancer-controller
+      register: alb_controller_result
+      
+    - name: Wait for ALB Controller installation
+      pause:
+        seconds: 10
+
+    - name: Apply ALB Ingress Controller
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/istio/alb-ingress-prod.yaml"
+
+    - name: Add External Secrets Helm repository
+      shell: |
+        helm repo add external-secrets https://charts.external-secrets.io
+        helm repo update
+      register: external_secrets_repo_result
+
+    - name: Uninstall existing External Secrets
+      shell: |
+        helm uninstall external-secrets -n external-secrets-system || true
+      register: uninstall_external_secrets
+      ignore_errors: true
+      
+    - name: Wait after uninstall
+      pause:
+        seconds: 30
+
+    - name: Install External Secrets
+      shell: |
+        helm install external-secrets external-secrets/external-secrets \
+          -n external-secrets-system \
+          --set serviceAccount.create=false \
+          --set serviceAccount.name=external-secrets
+      register: external_secrets_result
+
+    - name: Wait for External Secrets to be ready
+      pause:
+        seconds: 150
+
+    - name: Apply Cluster Secret Store
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/external-secrets/cluster-secret-store.yaml"
+        
+    - name: Wait after cluster secret store
+      pause:
+        seconds: 60
+
+    - name: Apply Redis External Secret
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/external-secrets/redis-external-secret.yaml"
+
+    - name: Apply MariaDB External Secret
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/external-secrets/mariadb-external-secret.yaml"
+
+    - name: Apply SQS Config External Secret
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/external-secrets/sqs-config-external-secret.yaml"
+
+    - name: Apply JWT External Secret
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/external-secrets/jwt-external-secret.yaml"
+
+    - name: Apply GHCR External Secret
+      kubernetes.core.k8s:
+        state: present
+        src: "/root/Infrastructure/code/kubernetes/external-secrets/ghcr-external-secret.yaml"
