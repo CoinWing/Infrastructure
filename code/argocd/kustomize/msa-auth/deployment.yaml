@@ -18,6 +18,12 @@ spec:
       containers:
         - name: msa-auth
           image: ghcr.io/coinwing/cowing-msa-auth
+          readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
           imagePullPolicy: Always
           env:
             - name: REDIS_HOST
