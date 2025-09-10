@@ -23,3 +23,13 @@ spec:
       allowEmpty: true
     syncOptions:
       - CreateNamespace=true
+  ignoreDifferences:
+  - group: apps
+    jsonPointers:
+    - /spec/replicas
+    - /metadata/annotations/deployment.kubernetes.io/revision
+    kind: Deployment
+  - group: autoscaling
+    jsonPointers:
+    - /status
+    kind: HorizontalPodAutoscaler
