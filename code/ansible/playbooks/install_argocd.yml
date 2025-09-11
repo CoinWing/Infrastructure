@@ -7,6 +7,8 @@
     argocd_namespace: "argocd"
     argocd_version: "v3.1.1"
     cluster_name: "cowing-prod-eks"
+  # 실제 bastion host 루트 디렉토리에 존재하는 app-of-apps manifest 위치
+    apps_manifest: "/root/apps.yaml"
     
   tasks:
     - name: Create ArgoCD namespace
@@ -37,3 +39,56 @@
           type: Available
           status: "True"
         wait_timeout: 300
+
+    - name: Patch argocd-server deployment to add --insecure flag
+      ansible.builtin.command: >-
+        kubectl -n {{ argocd_namespace }} patch deployment argocd-server --type='json'
+        -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--insecure"}]'
+      register: patch_result
+      changed_when: patch_result.rc == 0
+    
+    - name: Wait for setting argocd-server
+      pause:
+        seconds: 40
+
+    - name: Wait for argocd-server rollout after patch
+      ansible.builtin.command: >-
+        kubectl -n {{ argocd_namespace }} rollout status deploy/argocd-server --timeout=180s
+      register: rollout_status
+      changed_when: false
+
+    - name: Create app-of-apps manifest file on bastion host
+      ansible.builtin.copy:
+        dest: "{{ apps_manifest }}"
+        mode: '0644'
+        content: |
+          apiVersion: argoproj.io/v1alpha1
+          kind: Application
+          metadata:
+            name: apps
+            namespace: argocd
+          spec:
+            project: default
+            source:
+              repoURL: https://github.com/CoinWing/Infrastructure.git
+              path: code/argocd/applications
+              targetRevision: prod
+              directory:
+                recurse: true
+            destination:
+              server: https://kubernetes.default.svc
+              namespace: cowing-prod
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
+              syncOptions:
+                - CreateNamespace=true
+      when: apps_manifest is not file
+
+    - name: Apply app-of-apps manifest (apps.yaml)
+      kubernetes.core.k8s:
+        state: present
+        src: "{{ apps_manifest }}"
+        namespace: "{{ argocd_namespace }}"
+      when: apps_manifest is file

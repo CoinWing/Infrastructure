@@ -1,0 +1,31 @@
+---
+- name: Install daily kiali token renewal cron job
+  hosts: all
+  become: true
+  vars:
+    rewnew_script_source: "/root/Infrastructure/code/bash/rewnew.sh"
+    rewnew_log: "/var/log/rewnew.log"
+  tasks:
+    - name: Copy rewnew.sh script to target host
+      ansible.builtin.copy:
+        src: "{{ rewnew_script_source }}"
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Ensure log file exists (optional)
+      ansible.builtin.file:
+        path: "{{ rewnew_log }}"
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Create cron job for daily 11:00 token renewal
+      ansible.builtin.cron:
+        name: "kiali token renew"
+        user: root
+        minute: "0"
+        hour: "11"
+        job: "{{ rewnew_script_dest }} >> {{ rewnew_log }} 2>&1"
+        state: present
