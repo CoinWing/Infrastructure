@@ -109,6 +109,21 @@ eksctl create iamserviceaccount \
   --override-existing-serviceaccounts \
   --approve && sleep 30
 
+eksctl delete iamserviceaccount \
+  --region $1 \
+  --cluster $2 \
+  --namespace kube-system \
+  --name cluster-autoscaler && sleep 30
+
+eksctl create iamserviceaccount \
+    --region $1 \
+    --name cluster-autoscaler \
+    --namespace kube-system \
+    --cluster $2 \
+    --attach-policy-arn "arn:aws:iam::593793025731:policy/AmazonEKSClusterAutoscalerPolicy" \
+    --override-existing-serviceaccounts \
+    --approve && sleep 30 
+
 # cert-manager 설치
 kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml
 
